@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentDialog x:Class="ClassPlanner.Dialogs.EditSubjectDialog"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+               xmlns:ext="using:ClassPlanner.Extensions"
+               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               xmlns:viewmodels="using:ClassPlanner.ViewModels"
+               ext:ContentDialogExtensions.PrimaryCommand="{x:Bind ViewModel.SaveCommand}"
+               Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"
+               CloseButtonText="Cancelar"
+               DefaultButton="Primary"
+               PrimaryButtonText="Salvar"
+               Style="{StaticResource DefaultContentDialogStyle}"
+               mc:Ignorable="d">
+
+    <ScrollView MinWidth="360" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="8">
+
+            <TextBox Grid.Column="1" Text="{x:Bind ViewModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid Width="15"
+                              Height="15"
+                              HorizontalAlignment="Left"
+                              ext:BrushExtensions.ApplyBrushTo="Background"
+                              ext:BrushExtensions.DynamicBrushKey="{x:Bind ViewModel.Name, Mode=OneWay}"
+                              CornerRadius="2" />
+
+                        <TextBlock Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   Text="Nome" />
+                    </Grid>
+                </TextBox.Header>
+            </TextBox>
+            <Slider Maximum="10"
+                    Minimum="1"
+                    StepFrequency="1"
+                    TickFrequency="1"
+                    TickPlacement="Outside"
+                    Value="{x:Bind ViewModel.PeriodsPerWeek, Mode=TwoWay}">
+                <Slider.Header>
+                    <TextBlock>
+                        <Run Text="Aulas por semana:" />
+                        <Run Text="{x:Bind ViewModel.PeriodsPerWeek, Mode=OneWay}" />
+                    </TextBlock>
+                </Slider.Header>
+            </Slider>
+
+
+            <ComboBox HorizontalAlignment="Stretch"
+                      DisplayMemberPath="Name"
+                      Header="Turma"
+                      IsEnabled="False"
+                      ItemsSource="{x:Bind ViewModel.Classrooms}"
+                      SelectedItem="{x:Bind ViewModel.Classroom, Mode=OneWay}" />
+
+
+            <ComboBox HorizontalAlignment="Stretch"
+                      DisplayMemberPath="Name"
+                      Header="Professor"
+                      IsEditable="False"
+                      ItemsSource="{x:Bind ViewModel.Teachers}"
+                      SelectedItem="{x:Bind ViewModel.Teacher, Mode=TwoWay}"
+                      SelectionChanged="ComboBox_SelectionChanged" />
+        </StackPanel>
+    </ScrollView>
+</ContentDialog>

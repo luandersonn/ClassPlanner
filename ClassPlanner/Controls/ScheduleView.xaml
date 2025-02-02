@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ext="using:ClassPlanner.Extensions"
+                    xmlns:local="using:ClassPlanner.Controls"
+                    xmlns:models="using:ClassPlanner.Models"
+                    xmlns:tableView="using:WinUI.TableView">
+    <Style xmlns:local2="using:ClassPlanner.Controls" TargetType="local:ScheduleView">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:ScheduleView">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <tableView:TableView x:Name="TableViewControl"
+                                             Grid.Row="1"
+                                             VerticalAlignment="Top"
+                                             AutoGenerateColumns="False"
+                                             Background="{ThemeResource NavigationViewContentBackground}"
+                                             CanReorderItems="False"
+                                             CanResizeColumns="False"
+                                             IsReadOnly="True"
+                                             RowHeight="55"
+                                             SelectionMode="None"
+                                             SelectionUnit="Row"
+                                             ShowExportOptions="False"
+                                             ShowOptionsButton="False">
+                            <tableView:TableView.Columns>
+                                <tableView:TableViewTemplateColumn CanResize="False" Header="Período">
+                                    <tableView:TableViewTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock FontWeight="SemiBold" TextAlignment="Right">
+                                                <Run Text="{Binding PeriodIndex}" /><Run Text="º" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </tableView:TableViewTemplateColumn.CellTemplate>
+                                </tableView:TableViewTemplateColumn>
+
+                                <tableView:TableViewTemplateColumn Width="250" Header="Segunda-feira">
+                                    <tableView:TableViewTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="250"
+                                                  Height="50"
+                                                  Background="{ThemeResource NavigationViewContentBackground}"
+                                                  BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                  BorderThickness="1"
+                                                  CornerRadius="{ThemeResource ControlCornerRadius}"
+                                                  Translation="0,0,16"
+                                                  Visibility="{Binding Monday, Converter={StaticResource ItemToBoolConverter}}">
+                                                <Grid.Shadow>
+                                                    <ThemeShadow />
+                                                </Grid.Shadow>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid ext:BrushExtensions.ApplyBrushTo="Background"
+                                                      ext:BrushExtensions.DynamicBrushKey="{Binding Monday.Name}"
+                                                      CornerRadius="4,0,0,4" />
+
+                                                <Grid Grid.Column="1" Padding="8,4">
+
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock Text="{Binding Monday.Name}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               ToolTipService.ToolTip="{Binding Monday.Name}" />
+
+                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="10" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <FontIcon VerticalAlignment="Center"
+                                                                  ext:BrushExtensions.ApplyBrushTo="Foreground"
+                                                                  ext:BrushExtensions.DynamicBrushKey="{Binding Monday.Teacher.Name, FallbackValue=''}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#xEA8C;" />
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   VerticalAlignment="Center"
+                                                                   FontSize="12"
+                                                                   Opacity="0.7"
+                                                                   Text="{Binding Monday.Teacher.Name, FallbackValue='[Nenhum professor]'}" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </tableView:TableViewTemplateColumn.CellTemplate>
+                                </tableView:TableViewTemplateColumn>
+
+                                <tableView:TableViewTemplateColumn Width="250" Header="Terça-feira">
+                                    <tableView:TableViewTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="250"
+                                                  Height="50"
+                                                  Background="{ThemeResource NavigationViewContentBackground}"
+                                                  BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                  BorderThickness="1"
+                                                  CornerRadius="{ThemeResource ControlCornerRadius}"
+                                                  Translation="0,0,16"
+                                                  Visibility="{Binding Tuesday, Converter={StaticResource ItemToBoolConverter}}">
+                                                <Grid.Shadow>
+                                                    <ThemeShadow />
+                                                </Grid.Shadow>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid ext:BrushExtensions.ApplyBrushTo="Background"
+                                                      ext:BrushExtensions.DynamicBrushKey="{Binding Tuesday.Name}"
+                                                      CornerRadius="4,0,0,4" />
+
+                                                <Grid Grid.Column="1" Padding="8,4">
+
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock Text="{Binding Tuesday.Name}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               ToolTipService.ToolTip="{Binding Tuesday.Name}" />
+
+                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="10" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <FontIcon VerticalAlignment="Center"
+                                                                  ext:BrushExtensions.ApplyBrushTo="Foreground"
+                                                                  ext:BrushExtensions.DynamicBrushKey="{Binding Tuesday.Teacher.Name, FallbackValue=''}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#xEA8C;" />
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   VerticalAlignment="Center"
+                                                                   FontSize="12"
+                                                                   Opacity="0.7"
+                                                                   Text="{Binding Tuesday.Teacher.Name, FallbackValue='[Nenhum professor]'}" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </tableView:TableViewTemplateColumn.CellTemplate>
+                                </tableView:TableViewTemplateColumn>
+
+                                <tableView:TableViewTemplateColumn Width="250" Header="Quarta-feira">
+                                    <tableView:TableViewTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="250"
+                                                  Height="50"
+                                                  Background="{ThemeResource NavigationViewContentBackground}"
+                                                  BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                  BorderThickness="1"
+                                                  CornerRadius="{ThemeResource ControlCornerRadius}"
+                                                  Translation="0,0,16"
+                                                  Visibility="{Binding Wednesday, Converter={StaticResource ItemToBoolConverter}}">
+                                                <Grid.Shadow>
+                                                    <ThemeShadow />
+                                                </Grid.Shadow>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid ext:BrushExtensions.ApplyBrushTo="Background"
+                                                      ext:BrushExtensions.DynamicBrushKey="{Binding Wednesday.Name}"
+                                                      CornerRadius="4,0,0,4" />
+
+                                                <Grid Grid.Column="1" Padding="8,4">
+
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock Text="{Binding Wednesday.Name}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               ToolTipService.ToolTip="{Binding Wednesday.Name}" />
+
+                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="10" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <FontIcon VerticalAlignment="Center"
+                                                                  ext:BrushExtensions.ApplyBrushTo="Foreground"
+                                                                  ext:BrushExtensions.DynamicBrushKey="{Binding Wednesday.Teacher.Name, FallbackValue=''}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#xEA8C;" />
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   VerticalAlignment="Center"
+                                                                   FontSize="12"
+                                                                   Opacity="0.7"
+                                                                   Text="{Binding Wednesday.Teacher.Name, FallbackValue='[Nenhum professor]'}" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </tableView:TableViewTemplateColumn.CellTemplate>
+                                </tableView:TableViewTemplateColumn>
+
+                                <tableView:TableViewTemplateColumn Width="250" Header="Quinta-feira">
+                                    <tableView:TableViewTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="250"
+                                                  Height="50"
+                                                  Background="{ThemeResource NavigationViewContentBackground}"
+                                                  BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                  BorderThickness="1"
+                                                  CornerRadius="{ThemeResource ControlCornerRadius}"
+                                                  Translation="0,0,16"
+                                                  Visibility="{Binding Thursday, Converter={StaticResource ItemToBoolConverter}}">
+                                                <Grid.Shadow>
+                                                    <ThemeShadow />
+                                                </Grid.Shadow>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid ext:BrushExtensions.ApplyBrushTo="Background"
+                                                      ext:BrushExtensions.DynamicBrushKey="{Binding Thursday.Name}"
+                                                      CornerRadius="4,0,0,4" />
+
+                                                <Grid Grid.Column="1" Padding="8,4">
+
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock Text="{Binding Thursday.Name}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               ToolTipService.ToolTip="{Binding Thursday.Name}" />
+
+                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="10" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <FontIcon VerticalAlignment="Center"
+                                                                  ext:BrushExtensions.ApplyBrushTo="Foreground"
+                                                                  ext:BrushExtensions.DynamicBrushKey="{Binding Thursday.Teacher.Name, FallbackValue=''}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#xEA8C;" />
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   VerticalAlignment="Center"
+                                                                   FontSize="12"
+                                                                   Opacity="0.7"
+                                                                   Text="{Binding Thursday.Teacher.Name, FallbackValue='[Nenhum professor]'}" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </tableView:TableViewTemplateColumn.CellTemplate>
+                                </tableView:TableViewTemplateColumn>
+
+                                <tableView:TableViewTemplateColumn Width="250" Header="Sexta-feira">
+                                    <tableView:TableViewTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="250"
+                                                  Height="50"
+                                                  Background="{ThemeResource NavigationViewContentBackground}"
+                                                  BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                  BorderThickness="1"
+                                                  CornerRadius="{ThemeResource ControlCornerRadius}"
+                                                  Translation="0,0,16"
+                                                  Visibility="{Binding Friday, Converter={StaticResource ItemToBoolConverter}}">
+                                                <Grid.Shadow>
+                                                    <ThemeShadow />
+                                                </Grid.Shadow>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid ext:BrushExtensions.ApplyBrushTo="Background"
+                                                      ext:BrushExtensions.DynamicBrushKey="{Binding Friday.Name}"
+                                                      CornerRadius="4,0,0,4" />
+
+                                                <Grid Grid.Column="1" Padding="8,4">
+
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock Text="{Binding Friday.Name}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               ToolTipService.ToolTip="{Binding Friday.Name}" />
+
+                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="10" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <FontIcon VerticalAlignment="Center"
+                                                                  ext:BrushExtensions.ApplyBrushTo="Foreground"
+                                                                  ext:BrushExtensions.DynamicBrushKey="{Binding Friday.Teacher.Name, FallbackValue=''}"
+                                                                  FontSize="12"
+                                                                  Glyph="&#xEA8C;" />
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   VerticalAlignment="Center"
+                                                                   FontSize="12"
+                                                                   Opacity="0.7"
+                                                                   Text="{Binding Friday.Teacher.Name, FallbackValue='[Nenhum professor]'}" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </tableView:TableViewTemplateColumn.CellTemplate>
+                                </tableView:TableViewTemplateColumn>
+
+                            </tableView:TableView.Columns>
+                        </tableView:TableView>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

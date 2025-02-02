@@ -1,0 +1,57 @@
+﻿using ClassPlanner.Data;
+using ClassPlanner.Messenger;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ClassPlanner.ViewModels;
+
+public partial class ClassroomViewModel : EntityViewModel
+{
+    public ClassroomViewModel(Classroom classroom)
+    {
+        ArgumentNullException.ThrowIfNull(classroom);
+
+        Id = classroom.ClassroomId;
+        Name = classroom.Name;
+        Subjects = [.. classroom.Subjects.Select(s => new SubjectViewModel(s))];
+
+        Subjects.CollectionChanged += (_, _) => UpdatePeriodsCount();
+        UpdatePeriodsCount();
+    }
+
+    public override string DisplayName => Name;
+    public override long Id { get; set; }
+
+    [ObservableProperty]
+    private string _name = null!;
+
+    [ObservableProperty]
+    private int _totalPeriodsPerWeek;
+    public ObservableCollection<SubjectViewModel> Subjects { get; }
+
+    protected override async Task DeleteAsync()
+    {
+        using IServiceScope scope = ServiceProvider.CreateScope();
+        AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        IMessenger? messenger = scope.ServiceProvider.GetService<IMessenger>();
+
+        Classroom? classroom = context.Classroom.FirstOrDefault(x => x.ClassroomId == Id);
+
+        if (classroom is not null)
+        {
+            context.Classroom.Remove(classroom);
+            await context.SaveChangesAsync();
+            messenger?.Send(classroom, MessengerTokens.ClassroomRemoved);
+        }
+    }
+
+    private void UpdatePeriodsCount()
+    {
+        TotalPeriodsPerWeek = Subjects.Sum(s => s.PeriodsPerWeek);
+    }
+}

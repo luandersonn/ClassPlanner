@@ -1,0 +1,15 @@
+<ResourceDictionary x:Class="ClassPlanner.Themes.Generic"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="using:ClassPlanner.Converters"
+                    xmlns:local="using:ClassPlanner">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Controls/ScheduleView.xaml" />
+        <ResourceDictionary Source="/Controls/TitleBarControl.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <converters:ItemToBoolConverter x:Key="ItemToBoolConverter" />
+
+
+</ResourceDictionary>

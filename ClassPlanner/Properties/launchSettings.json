@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ClassPlanner (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ClassPlanner (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
