@@ -1,6 +1,8 @@
-﻿using ClassPlanner.Timetabling.CP;
+﻿using ClassPlanner.Data;
+using ClassPlanner.Timetabling.CP;
 using Google.OrTools.Sat;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +14,24 @@ public class TimetableSolver : ITimetableSolver
 
     public async Task<TimetableSolverResult> SolverAsync(TimetableInput input, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(input);
+
+        // Detectar se é inviável
+        foreach (Classroom classroom in input.Classrooms)
+        {
+            int totalPeriodsPerWeek = classroom.Subjects.Sum(x => x.PeriodsPerWeek);
+            int maxPeriodsPerWeek = input.PeriodsPerDay * input.WorkingDaysCount;
+
+            if (totalPeriodsPerWeek > maxPeriodsPerWeek)
+            {
+                return new TimetableSolverResult
+                {
+                    Result = CpSolverStatus.Infeasible,
+                    Timetables = []
+                };
+            }
+        }
+
         return await Task.Run(() =>
         {
             // 1. Inicializar o modelo e as variáveis
@@ -29,18 +49,17 @@ public class TimetableSolver : ITimetableSolver
 
             // 4. Resolver o modelo
             CpSolver solver = new();
-            TimetableSolutionCallback callback = new(model.Variables,
-                                                     [.. input.Classrooms],
-                                                     [.. input.Weekdays],
-                                                     input.PeriodsPerDay,
+            TimetableSolutionCallback callback = new(input,
+                                                     model.Variables,
                                                      output => OutputFound?.Invoke(this, new TimetableFoundEventArgs(output)));
 
             cancellationToken.Register(() => solver.StopSearch());
 
             string[] parameters =
             [
-                "num_search_workers:2", // Configuração para múltiplos threads
+                //"num_search_workers:2", // Configuração para múltiplos threads
                 //"max_time_in_seconds:60" // timeout
+                "enumerate_all_solutions:true"
             ];
 
             solver.StringParameters = string.Join(";", parameters);
@@ -64,7 +83,7 @@ public class TimetableSolver : ITimetableSolver
         LinearExpr penalties = LinearExpr.Sum(model.Penalties);
         LinearExpr rewards = LinearExpr.Sum(model.Rewards);
 
-        model.Model.Minimize(penalties - rewards);
+        model.Model.Maximize(rewards - penalties);
     }
 }
 

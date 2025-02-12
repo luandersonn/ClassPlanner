@@ -7,10 +7,9 @@
       xmlns:local="using:ClassPlanner.Views"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
-
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
+            <RowDefinition Height="32" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -42,14 +41,45 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Grade de horários" Tag="GenTimetabling">
+                    <NavigationViewItem.InfoBadge>
+                        <InfoBadge Opacity="{x:Bind GenerateViewModel.Timetables.Count, Mode=OneWay}" Value="{x:Bind GenerateViewModel.Timetables.Count, Mode=OneWay}" />
+                    </NavigationViewItem.InfoBadge>
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8C0;" />
+                        <FontIcon x:Name="symbolIcon" Glyph="&#xE8C0;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.Content>
                 <Frame x:Name="ContentFrame" />
             </NavigationView.Content>
+
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="{x:Bind GenerateViewModel.ElapsedTime, Mode=OneWay}"
+                                    Icon="Clock"
+                                    SelectsOnInvoked="False"
+                                    ToolTipService.ToolTip="Tempo de decorrido na geração da grade de horários" />
+            </NavigationView.FooterMenuItems>
         </NavigationView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="BlinkingVisualStates">
+                <VisualState x:Name="NotWorkingVisualState" />
+                <VisualState x:Name="WorkingVisualState">
+                    <Storyboard x:Name="IconBlinking"
+                                AutoReverse="True"
+                                RepeatBehavior="Forever">
+                        <DoubleAnimation Storyboard.TargetName="symbolIcon"
+                                         Storyboard.TargetProperty="Opacity"
+                                         From="1.0"
+                                         To="0.1"
+                                         Duration="0:0:0.6" />
+                    </Storyboard>
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind GenerateViewModel.GenerateTimetablingCommand.IsRunning, Mode=OneWay}" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
+
 </Page>

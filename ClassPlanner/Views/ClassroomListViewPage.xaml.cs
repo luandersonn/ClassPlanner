@@ -35,7 +35,7 @@ public sealed partial class ClassroomListViewPage : Page
     private async void OnAddSubjectClick(object sender, RoutedEventArgs e)
     {
         FrameworkElement element = (FrameworkElement)sender;
-        ClassroomViewModel classroom = (ClassroomViewModel)element.DataContext;
+        ClassroomViewModel? classroom = element.DataContext as ClassroomViewModel;
 
         await new EditSubjectDialog(classroom)
         {
@@ -78,19 +78,9 @@ public sealed partial class ClassroomListViewPage : Page
         }.ShowAsync();
     }
 
-    private void TreeView_SelectionChanged(TreeView sender, TreeViewSelectionChangedEventArgs args)
-    {
-
-    }
-
     private void SemanticZoom_ViewChangeStarted(object sender, SemanticZoomViewChangedEventArgs e)
     {
         e.DestinationItem.Item = e.SourceItem.Item;
-    }
-
-    private void Button_Click(object sender, RoutedEventArgs e)
-    {
-
     }
 
     private void Button_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)

@@ -1,6 +1,7 @@
 ﻿using ClassPlanner.Data;
 using ClassPlanner.Messenger;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -22,6 +23,8 @@ public partial class ClassroomViewModel : EntityViewModel
 
         Subjects.CollectionChanged += (_, _) => UpdatePeriodsCount();
         UpdatePeriodsCount();
+
+        DuplicateCommand = new AsyncRelayCommand(DuplicateAsync, AsyncRelayCommandOptions.FlowExceptionsToTaskScheduler);
     }
 
     public override string DisplayName => Name;
@@ -32,6 +35,9 @@ public partial class ClassroomViewModel : EntityViewModel
 
     [ObservableProperty]
     private int _totalPeriodsPerWeek;
+
+    public IAsyncRelayCommand DuplicateCommand { get; }
+
     public ObservableCollection<SubjectViewModel> Subjects { get; }
 
     protected override async Task DeleteAsync()
@@ -48,6 +54,30 @@ public partial class ClassroomViewModel : EntityViewModel
             await context.SaveChangesAsync();
             messenger?.Send(classroom, MessengerTokens.ClassroomRemoved);
         }
+    }
+
+    private async Task DuplicateAsync()
+    {
+        using IServiceScope scope = ServiceProvider.CreateScope();
+        AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        IMessenger? messenger = scope.ServiceProvider.GetService<IMessenger>();
+
+        Classroom classroom = new()
+        {
+            Name = Name!.Trim() + " cópia",
+            Subjects = Subjects.Select(s => new Subject
+            {
+                Name = s.Name,
+                PeriodsPerWeek = s.PeriodsPerWeek,
+                TeacherId = s.Teacher?.Id,
+            }).ToList()
+        };
+
+
+        await dbContext.Classroom.AddAsync(classroom);
+        await dbContext.SaveChangesAsync();
+
+        messenger?.Send(classroom, MessengerTokens.ClassroomAdded);
     }
 
     private void UpdatePeriodsCount()

@@ -1,4 +1,6 @@
-﻿using Google.OrTools.Sat;
+﻿using ClassPlanner.Data;
+using Google.OrTools.Sat;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ClassPlanner.Timetabling.Constraints;
@@ -7,32 +9,33 @@ public class TeacherAvailabilityConstraint : IConstraint
 {
     public void Register(TimetableInput input, TimetableModel model)
     {
-        foreach (var teacher in input.Classrooms
+        int totalPeriods = input.PeriodsPerDay * input.WorkingDaysCount;
+
+        foreach (Teacher teacher in input.Classrooms
                                      .SelectMany(c => c.Subjects)
-                                     .Where(s => s.Teacher != null)
+                                     .Where(s => s.Teacher is not null)
                                      .Select(s => s.Teacher!)
                                      .Distinct())
         {
-            foreach (var day in input.Weekdays)
-            {
-                foreach (var period in day.Periods)
-                {
-                    // Obter todas as variáveis relacionadas ao professor para o dia e período atuais
-                    var relevantVariables = model.Variables
-                        .Where(v => input.Classrooms
-                            .Any(c => c.Subjects
-                                .Any(s => s.SubjectId == v.Key.subjectId && s.TeacherId == teacher.TeacherId)))
-                        .Where(v => v.Key.day == day.DayOfWeek && v.Key.periodId == period)
-                        .Select(v => v.Value)
-                        .ToList();
+            HashSet<long> teacherSubjects = input.Classrooms
+                                                 .SelectMany(c => c.Subjects)
+                                                 .Where(s => s.TeacherId == teacher.TeacherId)
+                                                 .Select(s => s.SubjectId)
+                                                 .ToHashSet();
 
-                    // Adicionar a restrição: um professor só pode ter no máximo uma aula por vez
-                    if (relevantVariables.Count > 1)
-                    {
-                        model.Model.Add(LinearExpr.Sum(relevantVariables) <= 1);
-                    }
+            for (int periodIndex = 0; periodIndex < totalPeriods; periodIndex++)
+            {
+                var relevantVariables = model.Variables
+                                             .Where(v => teacherSubjects.Contains(v.Key.subjectId) && v.Key.periodId == periodIndex)
+                                             .Select(v => v.Value)
+                                             .ToList();
+
+                if (relevantVariables.Count > 1)
+                {
+                    model.Model.Add(LinearExpr.Sum(relevantVariables) <= 1);
                 }
             }
         }
     }
+
 }

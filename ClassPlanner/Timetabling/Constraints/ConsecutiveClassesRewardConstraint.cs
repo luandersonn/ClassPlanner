@@ -1,5 +1,5 @@
 ﻿using ClassPlanner.Data;
-using ClassPlanner.Models;
+using Google.OrTools.Sat;
 using System.Linq;
 
 namespace ClassPlanner.Timetabling.Constraints;
@@ -8,28 +8,37 @@ public class ConsecutiveClassesRewardConstraint : IConstraint
 {
     public void Register(TimetableInput input, TimetableModel model)
     {
-        foreach (Classroom classroom in input.Classrooms)
+        int totalPeriods = input.PeriodsPerDay * input.WorkingDaysCount;
+
+        foreach (Subject subject in input.Classrooms
+                                         .SelectMany(c => c.Subjects)
+                                         .Where(s => s.PeriodsPerWeek >= 2))
         {
-            foreach (Subject subject in classroom.Subjects)
+            var periodsInWeek = model.Variables
+                                     .Where(v => v.Key.subjectId == subject.SubjectId)
+                                     .OrderBy(v => v.Key.periodId)
+                                     .ToList();
+
+            for (int i = 0; i < periodsInWeek.Count - 1; i++)
             {
-                foreach (Weekday day in input.Weekdays)
+                IntVar first = periodsInWeek[i].Value;
+                IntVar second = periodsInWeek[i + 1].Value;
+
+                // Verifica se os períodos i e i+1 pertencem ao mesmo dia
+                // Isso é feito dividindo o ID do período pelo número de períodos por dia (inteiro)
+                // Como os IDs dos períodos são sequenciais, essa divisão retorna o "índice do dia"
+                // Se o índice do dia for o mesmo para ambos os períodos, significa que eles estão no mesmo dia
+                bool sameDay = (periodsInWeek[i].Key.periodId / input.PeriodsPerDay) ==
+                               (periodsInWeek[i + 1].Key.periodId / input.PeriodsPerDay);
+
+                if (sameDay)
                 {
-                    var periodsInDay = model.Variables
-                        .Where(v => v.Key.subjectId == subject.SubjectId && v.Key.day == day.DayOfWeek)
-                        .OrderBy(v => day.Periods.First(p => p == v.Key.periodId))
-                        .ToList();
+                    var consecutiveReward = model.Model.NewBoolVar(
+                        $"Consecutive_Reward_{subject.SubjectId}_{periodsInWeek[i].Key.periodId}");
 
-                    for (int i = 0; i < periodsInDay.Count - 1; i++)
-                    {
-                        var first = periodsInDay[i].Value;
-                        var second = periodsInDay[i + 1].Value;
+                    model.Model.Add(first + second == 2).OnlyEnforceIf(consecutiveReward);
 
-                        // Criar variável de recompensa para aulas consecutivas
-                        var consecutiveReward = model.Model.NewBoolVar($"Consecutive_Reward_{subject.SubjectId}_{day.DayOfWeek}_{i}");
-                        model.Model.Add(first + second == 2).OnlyEnforceIf(consecutiveReward);
-
-                        model.Rewards.Add(consecutiveReward);
-                    }
+                    model.Rewards.Add(consecutiveReward);
                 }
             }
         }

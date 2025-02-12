@@ -45,7 +45,13 @@
 
             <AppBarButton Click="OnAddClassroomClick"
                           Icon="Add"
-                          Label="Adicionar" />
+                          Label="Criar turma" />
+
+            <AppBarButton Click="OnAddSubjectClick" Label="Nova disciplina">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xECC4;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
 
             <AppBarButton Command="{x:Bind ViewModel.RefreshListCommand}"
                           Icon="Refresh"
@@ -63,32 +69,83 @@
 
         <Grid Grid.Row="1">
 
-            <Grid>
-                <SemanticZoom ViewChangeStarted="SemanticZoom_ViewChangeStarted">
-                    <SemanticZoom.ZoomedInView>
-                        <GridView Padding="8,0"
-                                  IsItemClickEnabled="True"
-                                  ItemsSource="{x:Bind GroupedItems.View}"
-                                  SelectionMode="None">
-                            <ListViewBase.GroupStyle>
-                                <GroupStyle>
-                                    <GroupStyle.HeaderContainerStyle>
-                                        <Style TargetType="GridViewHeaderItem">
-                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                            <Setter Property="Padding" Value="0" />
-                                        </Style>
-                                    </GroupStyle.HeaderContainerStyle>
-                                    <GroupStyle.HeaderTemplate>
-                                        <DataTemplate x:DataType="viewmodels:ClassroomViewModel">
-                                            <Grid Padding="12,0"
-                                                  HorizontalAlignment="Stretch"
-                                                  Background="Transparent">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="auto" />
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.ContextFlyout>
-                                                    <MenuFlyout>
+
+            <SemanticZoom ViewChangeStarted="SemanticZoom_ViewChangeStarted">
+                <SemanticZoom.ZoomedInView>
+                    <GridView Padding="8,8,8,0"
+                              IsItemClickEnabled="True"
+                              ItemsSource="{x:Bind GroupedItems.View}"
+                              SelectionMode="None">
+                        <ListViewBase.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderContainerStyle>
+                                    <Style TargetType="GridViewHeaderItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Padding" Value="0" />
+                                    </Style>
+                                </GroupStyle.HeaderContainerStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate x:DataType="viewmodels:ClassroomViewModel">
+                                        <Grid Padding="12,0"
+                                              HorizontalAlignment="Stretch"
+                                              Background="Transparent">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.ContextFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Click="OnAddSubjectClick"
+                                                                    Icon="Add"
+                                                                    Text="Adicionar disciplina à turma" />
+
+                                                    <MenuFlyoutItem Click="OnEditClassroomClick"
+                                                                    Icon="Edit"
+                                                                    Text="Editar informações" />
+
+
+                                                    <MenuFlyoutSeparator />
+
+                                                    <MenuFlyoutItem Command="{x:Bind DuplicateCommand}"
+                                                                    Icon="Copy"
+                                                                    Text="Duplicar turma" />
+
+                                                    <MenuFlyoutItem Click="OnDeleteItemClick"
+                                                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                                    Icon="Delete"
+                                                                    Text="Deletar turma">
+                                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                                            <KeyboardAccelerator Key="Delete" />
+                                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                                    </MenuFlyoutItem>
+                                                </MenuFlyout>
+                                            </Grid.ContextFlyout>
+
+                                            <TextBlock VerticalAlignment="Center"
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource SystemBaseMediumColor}"
+                                                       MaxLines="2"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       TextWrapping="Wrap">
+                                                <Run FontSize="18"
+                                                     FontWeight="SemiBold"
+                                                     Foreground="{ThemeResource SystemBaseHighColor}"
+                                                     Text="{x:Bind Name, Mode=OneWay}" />
+                                                <Run />
+                                                <Run Text="{x:Bind Subjects.Count, Mode=OneWay}" />
+                                                <Run Text="disciplina(s)" />
+                                                <Run Text="•" />
+                                                <Run Text="{x:Bind TotalPeriodsPerWeek, Mode=OneWay}" />
+                                                <Run Text="aula(s) por semana" />
+                                            </TextBlock>
+
+                                            <Button Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Tapped="Button_Tapped"
+                                                    ToolTipService.ToolTip="Mais opções">
+                                                <FontIcon FontSize="15" Glyph="&#xE712;" />
+                                                <Button.Flyout>
+                                                    <MenuFlyout Placement="Bottom">
                                                         <MenuFlyoutItem Click="OnAddSubjectClick"
                                                                         Icon="Add"
                                                                         Text="Adicionar disciplina à turma" />
@@ -102,170 +159,123 @@
                                                         <MenuFlyoutItem Click="OnDeleteItemClick"
                                                                         Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                                                                         Icon="Delete"
-                                                                        Text="Deletar turma">
-                                                            <MenuFlyoutItem.KeyboardAccelerators>
-                                                                <KeyboardAccelerator Key="Delete" />
-                                                            </MenuFlyoutItem.KeyboardAccelerators>
-                                                        </MenuFlyoutItem>
+                                                                        Text="Deletar turma" />
                                                     </MenuFlyout>
-                                                </Grid.ContextFlyout>
-
-                                                <TextBlock VerticalAlignment="Center"
-                                                           FontSize="12"
-                                                           Foreground="{ThemeResource SystemBaseMediumColor}"
-                                                           MaxLines="2"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           TextWrapping="Wrap">
-                                                    <Run FontSize="18"
-                                                         FontWeight="SemiBold"
-                                                         Foreground="{ThemeResource SystemBaseHighColor}"
-                                                         Text="{x:Bind Name}" />
-                                                    <Run />
-                                                    <Run Text="{x:Bind Subjects.Count, Mode=OneWay}" />
-                                                    <Run Text="disciplina(s)" />
-                                                    <Run Text="•" />
-                                                    <Run Text="{Binding TotalPeriodsPerWeek}" />
-                                                    <Run Text="aula(s) por semana" />
-                                                </TextBlock>
-
-                                                <Button Grid.Column="1"
-                                                        VerticalAlignment="Center"
-                                                        Click="Button_Click"
-                                                        Tapped="Button_Tapped"
-                                                        ToolTipService.ToolTip="Mais opções">
-                                                    <FontIcon FontSize="15" Glyph="&#xE712;" />
-                                                    <Button.Flyout>
-                                                        <MenuFlyout Placement="Bottom">
-                                                            <MenuFlyoutItem Click="OnAddSubjectClick"
-                                                                            Icon="Add"
-                                                                            Text="Adicionar disciplina à turma" />
-
-                                                            <MenuFlyoutItem Click="OnEditClassroomClick"
-                                                                            Icon="Edit"
-                                                                            Text="Editar informações" />
-
-                                                            <MenuFlyoutSeparator />
-
-                                                            <MenuFlyoutItem Click="OnDeleteItemClick"
-                                                                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                                                            Icon="Delete"
-                                                                            Text="Deletar turma" />
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </GroupStyle.HeaderTemplate>
-                                    <!--<GroupStyle.Panel>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                                <!--<GroupStyle.Panel>
                                         <ItemsPanelTemplate>
                                             <ItemsWrapGrid Orientation="Horizontal" />
                                         </ItemsPanelTemplate>
                                     </GroupStyle.Panel>-->
-                                </GroupStyle>
-                            </ListViewBase.GroupStyle>
+                            </GroupStyle>
+                        </ListViewBase.GroupStyle>
 
-                            <ListViewBase.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Width="250"
-                                          Height="90"
-                                          Background="{ThemeResource NavigationViewContentBackground}"
-                                          BorderBrush="{ThemeResource CircleElevationBorderBrush}"
-                                          BorderThickness="1"
-                                          CornerRadius="{ThemeResource ControlCornerRadius}"
-                                          Translation="0,0,16">
-                                        <Grid.Shadow>
-                                            <ThemeShadow />
-                                        </Grid.Shadow>
+                        <ListViewBase.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="250"
+                                      Height="90"
+                                      Background="{ThemeResource NavigationViewContentBackground}"
+                                      BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                      BorderThickness="1"
+                                      CornerRadius="{ThemeResource ControlCornerRadius}"
+                                      Translation="0,0,16">
+                                    <Grid.Shadow>
+                                        <ThemeShadow />
+                                    </Grid.Shadow>
 
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="8" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                                        <Grid.ContextFlyout>
-                                            <MenuFlyout>
-                                                <MenuFlyoutItem Click="OnEditSubjectClick"
-                                                                Icon="Edit"
-                                                                Text="Editar" />
+                                    <Grid.ContextFlyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Click="OnEditSubjectClick"
+                                                            Icon="Edit"
+                                                            Text="Editar" />
 
-                                                <MenuFlyoutSeparator />
+                                            <MenuFlyoutSeparator />
 
-                                                <MenuFlyoutItem Click="OnDeleteItemClick"
-                                                                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                                                Icon="Delete"
-                                                                Text="Deletar">
-                                                    <MenuFlyoutItem.KeyboardAccelerators>
-                                                        <KeyboardAccelerator Key="Delete" ScopeOwner="{Binding ElementName=treeViewItem}" />
-                                                    </MenuFlyoutItem.KeyboardAccelerators>
-                                                </MenuFlyoutItem>
-                                            </MenuFlyout>
-                                        </Grid.ContextFlyout>
+                                            <MenuFlyoutItem Click="OnDeleteItemClick"
+                                                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                            Icon="Delete"
+                                                            Text="Deletar">
+                                                <MenuFlyoutItem.KeyboardAccelerators>
+                                                    <KeyboardAccelerator Key="Delete" ScopeOwner="{Binding ElementName=treeViewItem}" />
+                                                </MenuFlyoutItem.KeyboardAccelerators>
+                                            </MenuFlyoutItem>
+                                        </MenuFlyout>
+                                    </Grid.ContextFlyout>
 
-                                        <Grid ext:BrushExtensions.ApplyBrushTo="Background"
-                                              ext:BrushExtensions.DynamicBrushKey="{Binding Name}"
-                                              CornerRadius="4,0,0,4" />
+                                    <Grid ext:BrushExtensions.ApplyBrushTo="Background"
+                                          ext:BrushExtensions.DynamicBrushKey="{Binding Name}"
+                                          CornerRadius="4,0,0,4" />
 
-                                        <Grid Grid.Column="1" Padding="8,4">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="auto" />
-                                                <RowDefinition Height="20" />
-                                                <RowDefinition Height="20" />
-                                            </Grid.RowDefinitions>
+                                    <Grid Grid.Column="1" Padding="8,4">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="20" />
+                                            <RowDefinition Height="20" />
+                                        </Grid.RowDefinitions>
 
-                                            <TextBlock FontSize="14"
-                                                       FontWeight="SemiBold"
-                                                       MaxLines="2"
-                                                       Text="{Binding Name}"
-                                                       TextWrapping="Wrap" />
+                                        <TextBlock FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   MaxLines="2"
+                                                   Text="{Binding Name}"
+                                                   TextWrapping="Wrap" />
 
-                                            <TextBlock Grid.Row="1"
-                                                       FontSize="12"
-                                                       Opacity="0.8">
-                                                <Run Text="{Binding PeriodsPerWeek}" />
-                                                <Run Text="aula(s) por semana" />
-                                            </TextBlock>
+                                        <TextBlock Grid.Row="1"
+                                                   FontSize="12"
+                                                   Opacity="0.8">
+                                            <Run Text="{Binding PeriodsPerWeek}" />
+                                            <Run Text="aula(s) por semana" />
+                                        </TextBlock>
 
-                                            <Grid Grid.Row="2" ColumnSpacing="4">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="20" />
-                                                    <ColumnDefinition />
-                                                </Grid.ColumnDefinitions>
+                                        <Grid Grid.Row="2" ColumnSpacing="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
 
-                                                <PersonPicture Width="20"
-                                                               VerticalAlignment="Center"
-                                                               ext:BrushExtensions.ApplyBrushTo="Background"
-                                                               ext:BrushExtensions.DynamicBrushKey="{Binding Teacher.Name}"
-                                                               DisplayName="{Binding Teacher.Name, FallbackValue='[Nenhum professor]'}" />
-
-                                                <TextBlock Grid.Column="1"
+                                            <PersonPicture Width="20"
                                                            VerticalAlignment="Center"
-                                                           FontSize="12"
-                                                           Text="{Binding Teacher.Name, FallbackValue='[Nenhum professor]'}" />
-                                            </Grid>
+                                                           ext:BrushExtensions.ApplyBrushTo="Background"
+                                                           ext:BrushExtensions.DynamicBrushKey="{Binding Teacher.Name}"
+                                                           DisplayName="{Binding Teacher.Name, FallbackValue='[Nenhum professor]'}" />
+
+                                            <TextBlock Grid.Column="1"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="12"
+                                                       Text="{Binding Teacher.Name, FallbackValue='[Nenhum professor]'}" />
                                         </Grid>
                                     </Grid>
-                                </DataTemplate>
-                            </ListViewBase.ItemTemplate>
-                        </GridView>
-                    </SemanticZoom.ZoomedInView>
+                                </Grid>
+                            </DataTemplate>
+                        </ListViewBase.ItemTemplate>
+                    </GridView>
+                </SemanticZoom.ZoomedInView>
 
-                    <SemanticZoom.ZoomedOutView>
-                        <ListView IsItemClickEnabled="True"
-                                  ItemsSource="{x:Bind GroupedItems.Source}"
-                                  SelectionMode="None">
-                            <ListViewBase.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock FontSize="18"
-                                               FontWeight="Bold"
-                                               Text="{Binding Name}" />
-                                </DataTemplate>
-                            </ListViewBase.ItemTemplate>
-                        </ListView>
-                    </SemanticZoom.ZoomedOutView>
-                </SemanticZoom>
-            </Grid>
-
+                <SemanticZoom.ZoomedOutView>
+                    <ListView IsItemClickEnabled="True"
+                              ItemsSource="{x:Bind GroupedItems.Source}"
+                              SelectionMode="None">
+                        <ListViewBase.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock FontSize="18"
+                                           FontWeight="Bold"
+                                           Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ListViewBase.ItemTemplate>
+                    </ListView>
+                </SemanticZoom.ZoomedOutView>
+            </SemanticZoom>
         </Grid>
+
+
 
     </Grid>
 </Page>

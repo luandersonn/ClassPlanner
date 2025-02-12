@@ -67,6 +67,8 @@ public partial class EditSubjectViewModel : BaseViewModel
         using IServiceScope scope = ServiceProvider.CreateScope();
         AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+        TeacherViewModel? selectedTeacher = null;
+        ClassroomViewModel? selectedClassroom = null;
 
         if (_subjectId is not null)
         {
@@ -79,8 +81,8 @@ public partial class EditSubjectViewModel : BaseViewModel
             {
                 Name = subject.Name;
                 PeriodsPerWeek = subject.PeriodsPerWeek;
-                Classroom = new ClassroomViewModel(subject.Classroom);
-                Teacher = subject.Teacher is null ? _noneTeacher : new TeacherViewModel(subject.Teacher);
+                selectedClassroom = new ClassroomViewModel(subject.Classroom);
+                selectedTeacher = subject.Teacher is null ? _noneTeacher : new TeacherViewModel(subject.Teacher);
             }
 
         }
@@ -102,7 +104,6 @@ public partial class EditSubjectViewModel : BaseViewModel
             Teachers.Add(new TeacherViewModel(teacher));
         }
 
-        OnPropertyChanged(nameof(Teacher));
 
         Classrooms.Clear();
 
@@ -111,7 +112,9 @@ public partial class EditSubjectViewModel : BaseViewModel
             Classrooms.Add(new ClassroomViewModel(classroom));
         }
 
-        OnPropertyChanged(nameof(Classroom));
+        await Task.Delay(50);
+        Teacher = selectedTeacher ?? _noneTeacher;
+        Classroom = selectedClassroom;
     }
 
     private bool CanSave() => !string.IsNullOrWhiteSpace(Name) && PeriodsPerWeek > 0 && Classroom is not null;

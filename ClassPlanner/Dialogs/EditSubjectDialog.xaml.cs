@@ -5,7 +5,7 @@ namespace ClassPlanner.Dialogs;
 
 public sealed partial class EditSubjectDialog : ContentDialog
 {
-    public EditSubjectDialog(ClassroomViewModel classroom) : this()
+    public EditSubjectDialog(ClassroomViewModel? classroom) : this()
     {
         ViewModel = new EditSubjectViewModel
         {

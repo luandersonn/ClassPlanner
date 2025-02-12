@@ -19,7 +19,10 @@ public abstract class EntityViewModel : BaseViewModel, IEquatable<EntityViewMode
     protected virtual bool CanDelete() => true;
     protected abstract Task DeleteAsync();
 
-    public bool Equals(EntityViewModel? other) => other is not null && Id == other.Id;
+    public bool Equals(EntityViewModel? other)
+    {
+        return other is not null && other.GetType() == GetType() && Id == other.Id;
+    }
 
     public override bool Equals(object? obj) => Equals(obj as EntityViewModel);
 

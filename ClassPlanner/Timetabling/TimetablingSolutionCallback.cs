@@ -6,10 +6,8 @@ using System.Collections.Generic;
 
 namespace ClassPlanner.Timetabling.CP;
 
-public partial class TimetableSolutionCallback(Dictionary<(long subjectId, DayOfWeek day, long periodId), IntVar> variables,
-                                               List<Classroom> classrooms,
-                                               List<Weekday> weekdays,
-                                               int periodsPerDay,
+public partial class TimetableSolutionCallback(TimetableInput input,
+                                               Dictionary<(long subjectId, int periodId), IntVar> variables,
                                                Action<Timetable> solutionFoundCallback) : CpSolverSolutionCallback
 {
     public List<Timetable> Timetables { get; } = [];
@@ -21,32 +19,35 @@ public partial class TimetableSolutionCallback(Dictionary<(long subjectId, DayOf
             ObjectiveValue = ObjectiveValue()
         };
 
-        foreach (Classroom classroom in classrooms)
+        int totalPeriods = input.PeriodsPerDay * input.WorkingDaysCount;
+
+        foreach (Classroom classroom in input.Classrooms)
         {
             ClassSchedule classSchedule = new()
             {
                 Classroom = classroom,
-                PeriodsPerDay = periodsPerDay
+                PeriodsPerDay = input.PeriodsPerDay
             };
 
             foreach (Subject subject in classroom.Subjects)
             {
-                foreach (Weekday day in weekdays)
+                for (int periodIndex = 0; periodIndex < totalPeriods; periodIndex++)
                 {
-                    foreach (int period in day.Periods)
-                    {
-                        (long SubjectId, DayOfWeek DayOfWeek, long PeriodId) key = (subject.SubjectId, day.DayOfWeek, period);
+                    DayOfWeek dayOfWeek = (DayOfWeek)((periodIndex / input.PeriodsPerDay) + 1); // Segunda-feira é 1, Terça-feira é 2, etc.
 
-                        if (variables.TryGetValue(key, out IntVar? variable) && Value(variable) == 1)
+                    int periodOfDay = periodIndex % input.PeriodsPerDay;
+
+                    (long SubjectId, int PeriodId) key = (subject.SubjectId, periodIndex);
+
+                    if (variables.TryGetValue(key, out IntVar? variable) && Value(variable) == 1)
+                    {
+                        classSchedule.SubjectSchedules.Add(new SubjectSchedule
                         {
-                            classSchedule.SubjectSchedules.Add(new SubjectSchedule
-                            {
-                                Subject = subject,
-                                Teacher = subject.Teacher,
-                                Day = day.DayOfWeek,
-                                Period = period
-                            });
-                        }
+                            Subject = subject,
+                            Teacher = subject.Teacher,
+                            Day = dayOfWeek,
+                            Period = periodOfDay
+                        });
                     }
                 }
             }

@@ -79,8 +79,6 @@
 
                                 <CheckBox Content="Evitar mais de duas aulas da mesma disciplina por dia" IsChecked="{x:Bind ViewModel.ExcessDailyClassesConstraintIsEnabled, Mode=TwoWay}" />
 
-                                <CheckBox Content="Preferir alocar aulas nos primeiros horários do dia" IsChecked="{x:Bind ViewModel.EarlyAllocationPreferenceConstraintIsEnabled, Mode=TwoWay}" />
-
                                 <CheckBox Content="Preferir que uma disciplina tenha duas aulas consecutivas no mesmo dia" IsChecked="{x:Bind ViewModel.ConsecutiveClassesRewardConstraintIsEnabled, Mode=TwoWay}" />
 
                             </StackPanel>

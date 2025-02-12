@@ -47,8 +47,16 @@ public partial class ClassroomListViewModel : CollectionListViewModel<ClassroomV
     }
 
 
-    private void OnClassroomAdded(object _, Classroom classroom)
+    private async void OnClassroomAdded(object _, Classroom classroom)
     {
+        using IServiceScope scope = Provider.CreateScope();
+        AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        classroom = await dbContext.Classroom
+                                   .AsNoTracking()
+                                   .Include(s => s.Subjects)
+                                   .ThenInclude(s => s.Teacher)
+                                   .FirstAsync(c => c.ClassroomId == classroom.ClassroomId);
+
         Items.Add(new ClassroomViewModel(classroom));
     }
     private void OnClassroomUpdated(object _, Classroom classroom)

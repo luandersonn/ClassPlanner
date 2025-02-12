@@ -23,6 +23,6 @@ public class TimetableMinObjectiveValueComparer : IComparer<Timetable>
             return -1;
         }
 
-        return x.ObjectiveValue.CompareTo(y.ObjectiveValue);
+        return -x.ObjectiveValue.CompareTo(y.ObjectiveValue);
     }
 }

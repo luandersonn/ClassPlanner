@@ -55,9 +55,9 @@
             <ComboBox HorizontalAlignment="Stretch"
                       DisplayMemberPath="Name"
                       Header="Turma"
-                      IsEnabled="False"
                       ItemsSource="{x:Bind ViewModel.Classrooms}"
-                      SelectedItem="{x:Bind ViewModel.Classroom, Mode=OneWay}" />
+                      PlaceholderText="Escolha uma turma"
+                      SelectedItem="{x:Bind ViewModel.Classroom, Mode=TwoWay}" />
 
 
             <ComboBox HorizontalAlignment="Stretch"

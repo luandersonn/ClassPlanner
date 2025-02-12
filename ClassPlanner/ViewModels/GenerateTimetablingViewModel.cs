@@ -27,9 +27,8 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
 
         _periodPerDay = 1;
 
-        _excessDailyClassesConstraintIsEnabled =
-            _earlyAllocationPreferenceConstraintIsEnabled =
-            _consecutiveClassesRewardConstraintIsEnabled = true;
+        _excessDailyClassesConstraintIsEnabled = _consecutiveClassesRewardConstraintIsEnabled = true;
+        _elapsedTime = "Não iniciado";
     }
 
     [ObservableProperty]
@@ -39,10 +38,11 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
     private bool _excessDailyClassesConstraintIsEnabled;
 
     [ObservableProperty]
-    private bool _earlyAllocationPreferenceConstraintIsEnabled;
+    private bool _consecutiveClassesRewardConstraintIsEnabled;
 
     [ObservableProperty]
-    private bool _consecutiveClassesRewardConstraintIsEnabled;
+    private string _elapsedTime;
+
 
     [ObservableProperty]
     private CpSolverStatus _result;
@@ -56,6 +56,8 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
 
     private async Task GenerateTimetablingAsync(CancellationToken cancellationToken)
     {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        _ = UpdateElapsedTimeAsync(stopwatch, cancellationToken);
         try
         {
             Timetables.Clear();
@@ -88,7 +90,7 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
                 weekdays.Add(weekday);
             }
 
-            TimetableInput input = new(classrooms, weekdays, PeriodPerDay);
+            TimetableInput input = new(classrooms, PeriodPerDay, 5);
 
             input.Constraints.Add(new PeriodAllocationConstraint());
             input.Constraints.Add(new TeacherAvailabilityConstraint());
@@ -96,8 +98,6 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
 
             if (ExcessDailyClassesConstraintIsEnabled)
                 input.Constraints.Add(new ExcessDailyClassesConstraint());
-            if (EarlyAllocationPreferenceConstraintIsEnabled)
-                input.Constraints.Add(new EarlyAllocationPreferenceConstraint());
             if (ConsecutiveClassesRewardConstraintIsEnabled)
                 input.Constraints.Add(new ConsecutiveClassesRewardConstraint());
 
@@ -114,5 +114,28 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
             Debug.WriteLine(ex);
             throw;
         }
+        finally
+        {
+            stopwatch.Stop();
+            DispatcherQueue.TryEnqueue(() => ElapsedTime = stopwatch.Elapsed.ToString(@"hh\:mm\:ss"));
+        }
     }
+
+    private async Task UpdateElapsedTimeAsync(Stopwatch stopwatch, CancellationToken cancellationToken)
+    {
+        while (stopwatch.IsRunning)
+        {
+            DispatcherQueue.TryEnqueue(() => ElapsedTime = stopwatch.Elapsed.ToString(@"hh\:mm\:ss"));
+
+            try
+            {
+                await Task.Delay(1000, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
+        }
+    }
+
 }

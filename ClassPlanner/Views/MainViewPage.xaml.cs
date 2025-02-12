@@ -14,9 +14,11 @@ public sealed partial class MainViewPage : Page
         InitializeComponent();
 
         ViewModel = App.Current.ServiceProvider.GetRequiredService<MainViewModel>();
+        GenerateViewModel = App.Current.ServiceProvider.GetRequiredService<GenerateTimetablingViewModel>();
     }
 
     public MainViewModel ViewModel { get; }
+    public GenerateTimetablingViewModel GenerateViewModel { get; }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {

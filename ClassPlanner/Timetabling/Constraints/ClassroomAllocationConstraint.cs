@@ -1,6 +1,6 @@
 ﻿using ClassPlanner.Data;
-using ClassPlanner.Models;
 using Google.OrTools.Sat;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ClassPlanner.Timetabling.Constraints;
@@ -9,23 +9,29 @@ public class ClassroomAllocationConstraint : IConstraint
 {
     public void Register(TimetableInput input, TimetableModel model)
     {
-        foreach (Classroom classroom in input.Classrooms)
-        {
-            foreach (Weekday day in input.Weekdays)
-            {
-                foreach (long period in day.Periods)
-                {
-                    var relevantVariables = model.Variables
-                                                 .Where(v => classroom.Subjects.Any(s => s.SubjectId == v.Key.subjectId))
-                                                 .Where(v => v.Key.day == day.DayOfWeek && v.Key.periodId == period)
-                                                 .Select(v => v.Value);
+        int totalPeriods = input.PeriodsPerDay * input.WorkingDaysCount;
 
-                    if (relevantVariables.Any())
-                    {
-                        model.Model.Add(LinearExpr.Sum(relevantVariables) <= 1);
-                    }
+        foreach (Classroom classroom in input.Classrooms) // Turma t
+        {
+
+            HashSet<long> classroomSubjects = classroom.Subjects
+                                                       .Select(s => s.SubjectId)
+                                                       .ToHashSet();
+
+            for (int periodIndex = 0; periodIndex < totalPeriods; periodIndex++)
+            {
+                var relevantVariables = model.Variables
+                                             .Where(v => classroomSubjects.Contains(v.Key.subjectId) && v.Key.periodId == periodIndex)
+                                             .Select(v => v.Value)
+                                             .ToList();
+
+                if (relevantVariables.Count > 0)
+                {
+                    // Somatório de variáveis de disciplinas d alocadas na turma t no período p deve ser menor ou igual a 1
+                    model.Model.Add(LinearExpr.Sum(relevantVariables) <= 1);
                 }
             }
         }
     }
+
 }

@@ -1,5 +1,4 @@
 ﻿using ClassPlanner.Data;
-using ClassPlanner.Models;
 using Google.OrTools.Sat;
 using System.Linq;
 
@@ -9,24 +8,27 @@ public class ExcessDailyClassesConstraint : IConstraint
 {
     public void Register(TimetableInput input, TimetableModel model)
     {
-        foreach (Classroom classroom in input.Classrooms)
+        int totalPeriods = input.PeriodsPerDay * input.WorkingDaysCount;
+
+        foreach (Subject subject in input.Classrooms
+                                         .SelectMany(c => c.Subjects)
+                                         .Where(c => c.PeriodsPerWeek >= 2))
         {
-            foreach (Subject subject in classroom.Subjects)
+
+            var subjectVariables = model.Variables
+                                        .Where(v => v.Key.subjectId == subject.SubjectId)
+                                        .GroupBy(v => v.Key.periodId / input.PeriodsPerDay) // Agrupar por dia
+                                        .ToDictionary(g => g.Key, g => g.Select(v => v.Value).ToList());
+
+            for (int dayIndex = 0; dayIndex < input.WorkingDaysCount; dayIndex++)
             {
-                foreach (Weekday day in input.Weekdays)
+                if (subjectVariables.TryGetValue(dayIndex, out var relevantVariables) && relevantVariables.Count != 0)
                 {
-                    System.Collections.Generic.IEnumerable<IntVar> relevantVariables = model.Variables
-                        .Where(v => v.Key.subjectId == subject.SubjectId && v.Key.day == day.DayOfWeek)
-                        .Select(v => v.Value);
+                    IntVar dailyExcess = model.Model.NewIntVar(0, 10, $"Excess_Daily_{subject.SubjectId}_{dayIndex}");
 
-                    if (relevantVariables.Any())
-                    {
-                        // Variável de penalidade para excesso de aulas diárias
-                        IntVar dailyExcess = model.Model.NewIntVar(0, 10, $"Excess_Daily_{subject.SubjectId}_{day.DayOfWeek}");
-                        model.Model.Add(LinearExpr.Sum(relevantVariables) <= 2 + dailyExcess);
+                    model.Model.Add(LinearExpr.Sum(relevantVariables) <= 2 + dailyExcess);
 
-                        model.Penalties.Add(dailyExcess);
-                    }
+                    model.Penalties.Add(dailyExcess);
                 }
             }
         }
