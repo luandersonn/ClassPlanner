@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
+using System.Threading.Tasks;
 
 namespace ClassPlanner.Views;
 
@@ -47,11 +48,7 @@ public sealed partial class ClassroomListViewPage : Page
     {
         FrameworkElement element = (FrameworkElement)sender;
         SubjectViewModel subject = (SubjectViewModel)element.DataContext;
-
-        await new EditSubjectDialog(subject)
-        {
-            XamlRoot = XamlRoot
-        }.ShowAsync();
+        await ShowEditSubjectModal(subject);
     }
 
     private async void OnEditClassroomClick(object sender, RoutedEventArgs e)
@@ -86,5 +83,30 @@ public sealed partial class ClassroomListViewPage : Page
     private void Button_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
     {
         e.Handled = true;
+    }
+
+    private async void OnItemClick(object sender, ItemClickEventArgs e)
+    {
+        Control control = (Control)sender;
+        try
+        {
+            control.IsEnabled = false;
+            if (e.ClickedItem is SubjectViewModel subject)
+            {
+                await ShowEditSubjectModal(subject);
+            }
+        }
+        finally
+        {
+            control.IsEnabled = true;
+        }
+    }
+
+    private async Task ShowEditSubjectModal(SubjectViewModel subject)
+    {
+        await new EditSubjectDialog(subject)
+        {
+            XamlRoot = XamlRoot
+        }.ShowAsync();
     }
 }

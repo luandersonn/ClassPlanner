@@ -45,7 +45,7 @@
                         <InfoBadge Opacity="{x:Bind GenerateViewModel.Timetables.Count, Mode=OneWay}" Value="{x:Bind GenerateViewModel.Timetables.Count, Mode=OneWay}" />
                     </NavigationViewItem.InfoBadge>
                     <NavigationViewItem.Icon>
-                        <FontIcon x:Name="symbolIcon" Glyph="&#xE8C0;" />
+                        <FontIcon Glyph="&#xE8C0;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
@@ -55,9 +55,12 @@
 
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem Content="{x:Bind GenerateViewModel.ElapsedTime, Mode=OneWay}"
-                                    Icon="Clock"
                                     SelectsOnInvoked="False"
-                                    ToolTipService.ToolTip="Tempo de decorrido na geração da grade de horários" />
+                                    ToolTipService.ToolTip="Tempo de decorrido na geração da grade de horários">
+                    <NavigationViewItem.Icon>
+                        <FontIcon x:Name="symbolIcon" Glyph="&#xE823;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.FooterMenuItems>
         </NavigationView>
 

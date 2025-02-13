@@ -71,7 +71,9 @@
                                                                TextTrimming="CharacterEllipsis"
                                                                ToolTipService.ToolTip="{Binding Monday.Name}" />
 
-                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                    <Grid Grid.Row="1"
+                                                          ColumnSpacing="4"
+                                                          Visibility="{Binding Monday.Teacher, Converter={StaticResource ItemToBoolConverter}}">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="10" />
                                                             <ColumnDefinition />
@@ -130,7 +132,9 @@
                                                                TextTrimming="CharacterEllipsis"
                                                                ToolTipService.ToolTip="{Binding Tuesday.Name}" />
 
-                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                    <Grid Grid.Row="1"
+                                                          ColumnSpacing="4"
+                                                          Visibility="{Binding Tuesday.Teacher, Converter={StaticResource ItemToBoolConverter}}">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="10" />
                                                             <ColumnDefinition />
@@ -189,7 +193,9 @@
                                                                TextTrimming="CharacterEllipsis"
                                                                ToolTipService.ToolTip="{Binding Wednesday.Name}" />
 
-                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                    <Grid Grid.Row="1"
+                                                          ColumnSpacing="4"
+                                                          Visibility="{Binding Wednesday.Teacher, Converter={StaticResource ItemToBoolConverter}}">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="10" />
                                                             <ColumnDefinition />
@@ -248,7 +254,9 @@
                                                                TextTrimming="CharacterEllipsis"
                                                                ToolTipService.ToolTip="{Binding Thursday.Name}" />
 
-                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                    <Grid Grid.Row="1"
+                                                          ColumnSpacing="4"
+                                                          Visibility="{Binding Thursday.Teacher, Converter={StaticResource ItemToBoolConverter}}">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="10" />
                                                             <ColumnDefinition />
@@ -307,7 +315,9 @@
                                                                TextTrimming="CharacterEllipsis"
                                                                ToolTipService.ToolTip="{Binding Friday.Name}" />
 
-                                                    <Grid Grid.Row="1" ColumnSpacing="4">
+                                                    <Grid Grid.Row="1"
+                                                          ColumnSpacing="4"
+                                                          Visibility="{Binding Friday.Teacher, Converter={StaticResource ItemToBoolConverter}}">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="10" />
                                                             <ColumnDefinition />

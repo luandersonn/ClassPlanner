@@ -40,24 +40,14 @@
                                  Target="{x:Bind optionsButton}">
                         <TeachingTip.Content>
                             <StackPanel>
-                                <Slider Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Maximum="10"
-                                        Minimum="1"
-                                        TickFrequency="1"
-                                        TickPlacement="Outside"
-                                        Value="{x:Bind ViewModel.PeriodPerDay, Mode=TwoWay}">
-                                    <Slider.Header>
-                                        <Grid>
-                                            <TextBlock>
-                                                <Run Text="Aulas por semana:" />
-                                                <Run Text="{x:Bind ViewModel.PeriodPerDay, Mode=OneWay}" />
-                                            </TextBlock>
-                                        </Grid>
-                                    </Slider.Header>
-                                </Slider>
+                                <NumberBox Header="Aulas por dia"
+                                           Maximum="10"
+                                           Minimum="1"
+                                           PlaceholderText="Digite a quantidade de aulas por semana"
+                                           SpinButtonPlacementMode="Inline"
+                                           Value="{x:Bind ViewModel.PeriodPerDay, Mode=TwoWay}" />
 
-                                <MenuFlyoutSeparator Margin="0,2" />
+                                <MenuFlyoutSeparator Margin="0,4" />
 
                                 <TextBlock FontWeight="Bold" Text="Restrições fortes" />
 
@@ -73,13 +63,50 @@
                                           IsChecked="True"
                                           IsEnabled="False" />
 
-                                <MenuFlyoutSeparator Margin="0,2" />
+                                <MenuFlyoutSeparator Margin="0,4" />
 
                                 <TextBlock FontWeight="Bold" Text="Restrições leves" />
 
                                 <CheckBox Content="Evitar mais de duas aulas da mesma disciplina por dia" IsChecked="{x:Bind ViewModel.ExcessDailyClassesConstraintIsEnabled, Mode=TwoWay}" />
 
                                 <CheckBox Content="Preferir que uma disciplina tenha duas aulas consecutivas no mesmo dia" IsChecked="{x:Bind ViewModel.ConsecutiveClassesRewardConstraintIsEnabled, Mode=TwoWay}" />
+
+                                <MenuFlyoutSeparator Margin="0,4" />
+
+                                <TextBlock FontWeight="Bold" Text="Configurações" />
+
+                                <Slider Maximum="64"
+                                        Minimum="1"
+                                        StepFrequency="4"
+                                        TickFrequency="4"
+                                        TickPlacement="Outside"
+                                        Value="{x:Bind ViewModel.MaxThreads, Mode=TwoWay}">
+                                    <Slider.Header>
+                                        <TextBlock>
+                                            <Run Text="Quantidade de processos paralelos" />
+                                        </TextBlock>
+                                    </Slider.Header>
+                                </Slider>
+
+                                <Grid ColumnSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <FontIcon HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              FontSize="14"
+                                              Glyph="&#xF167;" />
+
+                                    <TextBlock Grid.Column="1"
+                                               FontSize="12"
+                                               Opacity="0.7"
+                                               Text="Mais processos consomem mais memória, mas podem encontrar soluções mais rapidamente."
+                                               TextWrapping="Wrap" />
+                                </Grid>
+
+
 
                             </StackPanel>
                         </TeachingTip.Content>
@@ -121,30 +148,26 @@
                     <RepositionThemeTransition />
                 </TransitionCollection>
             </Grid.Transitions>
-            <SplitView DisplayMode="Inline"
+            <SplitView DisplayMode="CompactInline"
                        IsPaneOpen="True"
-                       OpenPaneLength="155"
+                       OpenPaneLength="60"
                        PaneBackground="{ThemeResource LayerOnAcrylicFillColorDefault}">
                 <SplitView.Pane>
                     <Grid>
                         <ListView x:Name="lista" ItemsSource="{x:Bind ViewModel.Timetables}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="timetabling:Timetable">
-                                    <Grid Padding="0,4">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock FontWeight="SemiBold" Text="Grade de horários" />
-
-                                        <TextBlock Grid.Row="1"
-                                                   FontSize="12"
-                                                   Opacity="0.7">
-                                            <Run Text="Valor objetivo:" />
-                                            <Run Text="{x:Bind ObjectiveValue}" />
-                                        </TextBlock>
-                                    </Grid>
+                                    <Border Width="30"
+                                            Padding="2"
+                                            HorizontalAlignment="Left"
+                                            Background="{ThemeResource AccentAAFillColorDefaultBrush}"
+                                            BorderThickness="2"
+                                            CornerRadius="4"
+                                            ToolTipService.ToolTip="Valor objetivo do timetabling (quanto maior, melhor)">
+                                        <TextBlock Foreground="{ThemeResource SystemAltHighColor}"
+                                                   Text="{x:Bind ObjectiveValue}"
+                                                   TextAlignment="Center" />
+                                    </Border>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>

@@ -26,6 +26,7 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
         Timetables = new ObservableSortedCollection<Timetable>(new TimetableMinObjectiveValueComparer());
 
         _periodPerDay = 1;
+        _maxThreads = 2;
 
         _excessDailyClassesConstraintIsEnabled = _consecutiveClassesRewardConstraintIsEnabled = true;
         _elapsedTime = "Não iniciado";
@@ -41,7 +42,11 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
     private bool _consecutiveClassesRewardConstraintIsEnabled;
 
     [ObservableProperty]
+    private int _maxThreads;
+
+    [ObservableProperty]
     private string _elapsedTime;
+
 
 
     [ObservableProperty]
@@ -90,7 +95,12 @@ public partial class GenerateTimetablingViewModel : BaseViewModel
                 weekdays.Add(weekday);
             }
 
-            TimetableInput input = new(classrooms, PeriodPerDay, 5);
+            TimetableInput input = new(classrooms)
+            {
+                PeriodsPerDay = PeriodPerDay,
+                WorkingDaysCount = 5, // 5 dias da semana
+                MaxThreads = MaxThreads,
+            };
 
             input.Constraints.Add(new PeriodAllocationConstraint());
             input.Constraints.Add(new TeacherAvailabilityConstraint());

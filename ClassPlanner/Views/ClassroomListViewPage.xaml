@@ -17,8 +17,6 @@
                               ItemsPath="Subjects"
                               Source="{x:Bind ViewModel.Items, Mode=OneWay}" />
 
-
-
     </Page.Resources>
 
     <Grid>
@@ -74,6 +72,7 @@
                 <SemanticZoom.ZoomedInView>
                     <GridView Padding="8,8,8,0"
                               IsItemClickEnabled="True"
+                              ItemClick="OnItemClick"
                               ItemsSource="{x:Bind GroupedItems.View}"
                               SelectionMode="None">
                         <ListViewBase.GroupStyle>

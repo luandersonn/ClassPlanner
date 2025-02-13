@@ -55,11 +55,12 @@ public class TimetableSolver : ITimetableSolver
 
             cancellationToken.Register(() => solver.StopSearch());
 
+            int workers = Math.Clamp(input.MaxThreads, 1, 64);
+
             string[] parameters =
             [
-                //"num_search_workers:2", // Configuração para múltiplos threads
-                //"max_time_in_seconds:60" // timeout
-                "enumerate_all_solutions:true"
+                $"num_search_workers:{workers}", // Configuração para múltiplos threads
+                //"max_time_in_seconds:60" // timeout                
             ];
 
             solver.StringParameters = string.Join(";", parameters);
