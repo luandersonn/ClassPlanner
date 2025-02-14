@@ -1,12 +1,12 @@
-﻿using ClassPlanner.Timetabling;
+﻿using ClassPlanner.ViewModels;
 using System.Collections.Generic;
 
 namespace ClassPlanner.Collections;
 
-public class TimetableMinObjectiveValueComparer : IComparer<Timetable>
+public class SubjectViewModelComparer : IComparer<SubjectViewModel>
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Converter em expressão condicional", Justification = "<Pendente>")]
-    public int Compare(Timetable? x, Timetable? y)
+    public int Compare(SubjectViewModel? x, SubjectViewModel? y)
     {
         if (x is null && y is null)
         {
@@ -23,6 +23,6 @@ public class TimetableMinObjectiveValueComparer : IComparer<Timetable>
             return -1;
         }
 
-        return -x.ObjectiveValue.CompareTo(y.ObjectiveValue);
+        return x.Name.CompareTo(y.Name);
     }
 }

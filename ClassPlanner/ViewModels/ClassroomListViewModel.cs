@@ -89,7 +89,7 @@ public partial class ClassroomListViewModel : CollectionListViewModel<ClassroomV
                                  .Include(s => s.Teacher)
                                  .FirstAsync(s => s.SubjectId == subject.SubjectId);
 
-        classroomView.Subjects.Add(new SubjectViewModel(subject));
+        classroomView.Subjects.AddItem(new SubjectViewModel(subject));
     }
     private async void OnSubjectUpdated(object _, Subject subject)
     {
@@ -98,9 +98,7 @@ public partial class ClassroomListViewModel : CollectionListViewModel<ClassroomV
         SubjectViewModel? subjectView = classroomView.Subjects.FirstOrDefault(s => s.Id == subject.SubjectId);
         if (subjectView is null) return;
 
-        int index = classroomView.Subjects.IndexOf(subjectView);
-
-        classroomView.Subjects.Remove(subjectView);
+        classroomView.Subjects.RemoveItem(subjectView);
 
         using IServiceScope scope = Provider.CreateScope();
         AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -109,7 +107,7 @@ public partial class ClassroomListViewModel : CollectionListViewModel<ClassroomV
                                  .FirstAsync(s => s.SubjectId == subject.SubjectId);
 
         subjectView = new SubjectViewModel(subject);
-        classroomView.Subjects.Insert(index, subjectView);
+        classroomView.Subjects.AddItem(subjectView);
     }
     private void OnSubjectRemoved(object _, Subject subject)
     {
@@ -117,6 +115,6 @@ public partial class ClassroomListViewModel : CollectionListViewModel<ClassroomV
         if (classroomView is null) return;
         SubjectViewModel? subjectView = classroomView.Subjects.FirstOrDefault(s => s.Id == subject.SubjectId);
         if (subjectView is null) return;
-        classroomView.Subjects.Remove(subjectView);
+        classroomView.Subjects.RemoveItem(subjectView);
     }
 }

@@ -1,11 +1,11 @@
-﻿using ClassPlanner.Data;
+﻿using ClassPlanner.Collections;
+using ClassPlanner.Data;
 using ClassPlanner.Messenger;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +19,7 @@ public partial class ClassroomViewModel : EntityViewModel
 
         Id = classroom.ClassroomId;
         Name = classroom.Name;
-        Subjects = [.. classroom.Subjects.Select(s => new SubjectViewModel(s))];
+        Subjects = new ObservableSortedCollection<SubjectViewModel>(new SubjectViewModelComparer(), classroom.Subjects.Select(s => new SubjectViewModel(s)));
 
         Subjects.CollectionChanged += (_, _) => UpdatePeriodsCount();
         UpdatePeriodsCount();
@@ -38,7 +38,7 @@ public partial class ClassroomViewModel : EntityViewModel
 
     public IAsyncRelayCommand DuplicateCommand { get; }
 
-    public ObservableCollection<SubjectViewModel> Subjects { get; }
+    public IObservableSortedCollection<SubjectViewModel> Subjects { get; }
 
     protected override async Task DeleteAsync()
     {
