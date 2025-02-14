@@ -150,24 +150,71 @@
             </Grid.Transitions>
             <SplitView DisplayMode="CompactInline"
                        IsPaneOpen="True"
-                       OpenPaneLength="60"
+                       OpenPaneLength="230"
                        PaneBackground="{ThemeResource LayerOnAcrylicFillColorDefault}">
                 <SplitView.Pane>
                     <Grid>
-                        <ListView x:Name="lista" ItemsSource="{x:Bind ViewModel.Timetables}">
+                        <ListView x:Name="lista"
+                                  Padding="0,4"
+                                  ItemsSource="{x:Bind ViewModel.Timetables}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="timetabling:Timetable">
-                                    <Border Width="30"
-                                            Padding="2"
-                                            HorizontalAlignment="Left"
-                                            Background="{ThemeResource AccentAAFillColorDefaultBrush}"
-                                            BorderThickness="2"
-                                            CornerRadius="4"
-                                            ToolTipService.ToolTip="Valor objetivo do timetabling (quanto maior, melhor)">
-                                        <TextBlock Foreground="{ThemeResource SystemAltHighColor}"
-                                                   Text="{x:Bind ObjectiveValue}"
-                                                   TextAlignment="Center" />
-                                    </Border>
+                                    <Grid Margin="2"
+                                          Background="{ThemeResource NavigationViewContentBackground}"
+                                          BorderBrush="{ThemeResource NavigationViewItemSeparatorForeground}"
+                                          BorderThickness="1"
+                                          CornerRadius="6"
+                                          Translation="0,0,8">
+                                        <Grid.Shadow>
+                                            <ThemeShadow />
+                                        </Grid.Shadow>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid Padding="4"
+                                              Background="{ThemeResource AccentAcrylicBackgroundFillColorBaseBrush}"
+                                              BorderBrush="{ThemeResource NavigationViewItemSeparatorForeground}"
+                                              BorderThickness="0,0,1,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock VerticalAlignment="Bottom"
+                                                       FontSize="18"
+                                                       FontWeight="Bold"
+                                                       Text="{x:Bind ObjectiveValue}"
+                                                       TextAlignment="Center" />
+
+                                            <TextBlock Grid.Row="1"
+                                                       VerticalAlignment="Top"
+                                                       FontSize="12"
+                                                       Text="Valor objetivo"
+                                                       TextAlignment="Center"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+
+                                        <StackPanel Grid.Column="1"
+                                                    Padding="8"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock FontSize="12"
+                                                       Foreground="{ThemeResource SystemBaseMediumColor}"
+                                                       Text="Tempo de busca" />
+                                            <TextBlock FontSize="14" FontWeight="SemiBold">
+                                                <Run FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                     FontWeight="Normal"
+                                                     Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}"
+                                                     Text="&#xE823;" />
+                                                <Run Text="{x:Bind SolutionTimeFormatted}" />
+                                            </TextBlock>
+
+                                        </StackPanel>
+
+
+                                    </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>

@@ -35,7 +35,7 @@ public sealed partial class GenerateTimetablingViewPage : Page
         return status switch
         {
             CpSolverStatus.Optimal => "A melhor solução para o modelo foi encontrada",
-            CpSolverStatus.Feasible => "Uma solução para o modelo foi encontrada mas não é a melhor possível",
+            CpSolverStatus.Feasible => "Uma solução para o modelo foi encontrada mas pode não ser a melhor possível",
             CpSolverStatus.Infeasible => "O modelo não tem soluções possíveis",
             CpSolverStatus.ModelInvalid => "O modelo foi construido de forma inválida",
             CpSolverStatus.Unknown => "Ocorreu um erro desconhecido",

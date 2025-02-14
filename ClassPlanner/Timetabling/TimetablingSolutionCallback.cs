@@ -12,11 +12,14 @@ public partial class TimetableSolutionCallback(TimetableInput input,
 {
     public List<Timetable> Timetables { get; } = [];
 
+    public DateTime StartDate { get; set; }
+
     public override void OnSolutionCallback()
     {
         Timetable timetable = new()
         {
-            ObjectiveValue = ObjectiveValue()
+            ObjectiveValue = ObjectiveValue(),
+            SolutionTime = DateTime.Now - StartDate,
         };
 
         int totalPeriods = input.PeriodsPerDay * input.WorkingDaysCount;

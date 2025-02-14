@@ -67,6 +67,8 @@ public class TimetableSolver : ITimetableSolver
 
             cancellationToken.ThrowIfCancellationRequested();
 
+            callback.StartDate = DateTime.Now;
+
             CpSolverStatus result = solver.Solve(model.Model, callback);
 
 

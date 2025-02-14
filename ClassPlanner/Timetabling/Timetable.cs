@@ -1,4 +1,5 @@
 ﻿using ClassPlanner.Models;
+using System;
 using System.Collections.Generic;
 
 namespace ClassPlanner.Timetabling;
@@ -9,4 +10,8 @@ public class Timetable
     public double ObjectiveValue { get; set; }
 
     public override string ToString() => $"Timetable {ObjectiveValue}";
+
+    public required TimeSpan SolutionTime { get; set; }
+
+    public string SolutionTimeFormatted => SolutionTime.ToString(@"hh\:mm\:ss");
 }
