@@ -41,15 +41,15 @@ public sealed partial class MainViewPage : Page
         switch (page)
         {
             case "Classrooms":
-                ContentFrame.Navigate(typeof(ClassroomListViewPage), transition);
+                ContentFrame.Navigate(typeof(ClassroomListViewPage), null, transition);
                 break;
 
             case "Teaches":
-                ContentFrame.Navigate(typeof(TeachersListViewPage), transition);
+                ContentFrame.Navigate(typeof(TeachersListViewPage), null, transition);
                 break;
 
             case "GenTimetabling":
-                ContentFrame.Navigate(typeof(GenerateTimetablingViewPage), transition);
+                ContentFrame.Navigate(typeof(GenerateTimetablingViewPage), null, transition);
                 break;
         }
     }

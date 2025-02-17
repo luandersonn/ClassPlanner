@@ -5,7 +5,7 @@
                     xmlns:local="using:ClassPlanner.Controls"
                     xmlns:models="using:ClassPlanner.Models"
                     xmlns:tableView="using:WinUI.TableView">
-    <Style xmlns:local2="using:ClassPlanner.Controls" TargetType="local:ScheduleView">
+    <Style TargetType="local:ScheduleView">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:ScheduleView">

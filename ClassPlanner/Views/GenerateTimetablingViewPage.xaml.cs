@@ -1,7 +1,10 @@
+using ClassPlanner.Timetabling.Validation;
 using ClassPlanner.ViewModels;
 using Google.OrTools.Sat;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 
 namespace ClassPlanner.Views;
 
@@ -55,4 +58,19 @@ public sealed partial class GenerateTimetablingViewPage : Page
             _ => InfoBarSeverity.Error
         };
     }
+}
+
+
+public partial class ValidationItemTemplateSelector : DataTemplateSelector
+{
+    public DataTemplate? ValidationTemplate { get; set; }
+    public DataTemplate? ErrorTemplate { get; set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Converter em expressão condicional", Justification = "<Pendente>")]
+    protected override DataTemplate? SelectTemplateCore(object item) => item switch
+    {
+        TimetableValidationResult => ValidationTemplate,
+        string => ErrorTemplate,
+        _ => throw new NotSupportedException("Item not supported"),
+    };
 }

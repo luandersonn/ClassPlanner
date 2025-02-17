@@ -4,10 +4,9 @@ namespace ClassPlanner.Timetabling.Validation;
 
 public class TimetableValidationResult
 {
-    public bool IsValid => Errors.Count == 0;
-
+    public ValidationResultType Result { get; set; }
+    public required string Title { get; set; }
     public List<string> Errors { get; } = [];
-
     public void AddError(string errorMessage)
     {
         Errors.Add(errorMessage);

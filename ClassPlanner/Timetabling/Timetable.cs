@@ -1,4 +1,5 @@
 ﻿using ClassPlanner.Models;
+using ClassPlanner.Timetabling.Validation;
 using System;
 using System.Collections.Generic;
 
@@ -14,4 +15,5 @@ public class Timetable
     public required TimeSpan SolutionTime { get; set; }
 
     public string SolutionTimeFormatted => SolutionTime.ToString(@"hh\:mm\:ss");
+    public List<TimetableValidationResult> ValidationResults { get; } = [];
 }

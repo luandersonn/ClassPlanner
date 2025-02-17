@@ -65,6 +65,7 @@
                       Header="Professor"
                       IsEditable="False"
                       ItemsSource="{x:Bind ViewModel.Teachers}"
+                      PlaceholderText="Selecione um professor (opcional)"
                       SelectedItem="{x:Bind ViewModel.Teacher, Mode=TwoWay}"
                       SelectionChanged="ComboBox_SelectionChanged" />
         </StackPanel>

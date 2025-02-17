@@ -45,7 +45,7 @@ public sealed partial class TitleBarControl : Control
             {
                 AppTitleVersionRunText.Text = "";
 
-                string appName = "Gerador de horários";
+                string appName = "ClassPlanner";
 
                 string windowTitle = string.IsNullOrWhiteSpace(title)
                                     ? appName

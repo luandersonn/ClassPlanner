@@ -58,6 +58,11 @@ public partial class TimetableSolutionCallback(TimetableInput input,
             timetable.ClassSchedules.Add(classSchedule);
         }
 
+        foreach (IConstraint constraint in input.Constraints)
+        {
+            timetable.ValidationResults.Add(constraint.Validate(input, timetable));
+        }
+
         solutionFoundCallback(timetable);
 
         Timetables.Add(timetable);

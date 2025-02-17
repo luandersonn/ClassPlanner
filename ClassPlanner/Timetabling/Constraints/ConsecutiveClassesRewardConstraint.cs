@@ -1,5 +1,8 @@
 ﻿using ClassPlanner.Data;
+using ClassPlanner.Models;
+using ClassPlanner.Timetabling.Validation;
 using Google.OrTools.Sat;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ClassPlanner.Timetabling.Constraints;
@@ -43,4 +46,58 @@ public class ConsecutiveClassesRewardConstraint : IConstraint
             }
         }
     }
+
+    public TimetableValidationResult Validate(TimetableInput input, Timetable timetable)
+    {
+        TimetableValidationResult validationResult = new()
+        {
+            Result = ValidationResultType.Success,
+            Title = "É recomendável alocar aulas em pares de duas consecutivamente"
+        };
+
+        foreach (ClassSchedule classSchedule in timetable.ClassSchedules)
+        {
+            foreach (Subject subject in input.Classrooms
+                                             .First(c => c.ClassroomId == classSchedule.Classroom.ClassroomId)
+                                             .Subjects)
+            {
+                List<SubjectSchedule> subjectSchedules = [.. classSchedule.SubjectSchedules
+                                                                          .Where(s => s.Subject.SubjectId == subject.SubjectId)
+                                                                          .OrderBy(s => s.Day)
+                                                                          .ThenBy(s => s.Period)];
+
+                int totalClasses = subjectSchedules.Count;
+
+                if (totalClasses <= 1)
+                    continue;
+
+                int expectedPairs = totalClasses / 2;
+                int consecutivePairs = 0;
+                int remainingClasses = totalClasses % 2;
+
+                for (int i = 0; i < subjectSchedules.Count - 1; i++)
+                {
+                    SubjectSchedule first = subjectSchedules[i];
+                    SubjectSchedule second = subjectSchedules[i + 1];
+
+                    if (first.Subject.SubjectId == second.Subject.SubjectId &&
+                        first.Day == second.Day &&
+                        first.Period + 1 == second.Period)
+                    {
+                        consecutivePairs++;
+                        i++;
+                    }
+                }
+
+                if (consecutivePairs != expectedPairs || remainingClasses > 1)
+                {
+                    validationResult.AddError($"A disciplina '{subject.Name}' da turma '{classSchedule.Classroom.Name}' podia ter {expectedPairs} pares consecutivos, mas apenas {consecutivePairs} foram alocadas");
+                    validationResult.Result = ValidationResultType.Warning;
+                }
+            }
+        }
+
+        return validationResult;
+    }
+
 }

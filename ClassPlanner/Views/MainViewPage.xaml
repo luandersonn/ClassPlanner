@@ -40,7 +40,7 @@
                         <FontIcon Glyph="&#xE902;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Grade de horários" Tag="GenTimetabling">
+                <NavigationViewItem Content="Gerador de horários" Tag="GenTimetabling">
                     <NavigationViewItem.InfoBadge>
                         <InfoBadge Opacity="{x:Bind GenerateViewModel.Timetables.Count, Mode=OneWay}" Value="{x:Bind GenerateViewModel.Timetables.Count, Mode=OneWay}" />
                     </NavigationViewItem.InfoBadge>

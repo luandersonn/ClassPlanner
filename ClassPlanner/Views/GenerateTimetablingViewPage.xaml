@@ -10,7 +10,47 @@
       xmlns:models="using:ClassPlanner.Models"
       xmlns:tableView="using:WinUI.TableView"
       xmlns:timetabling="using:ClassPlanner.Timetabling"
+      xmlns:toolkitControls="using:CommunityToolkit.WinUI.UI.Controls"
+      xmlns:toolkitSeg="using:CommunityToolkit.WinUI.Controls"
+      xmlns:validation="using:ClassPlanner.Timetabling.Validation"
       mc:Ignorable="d">
+
+    <Page.Resources>
+        <local:ValidationItemTemplateSelector x:Key="ValidationItemTemplateSelector"
+                                              ErrorTemplate="{StaticResource ErrorTemplate}"
+                                              ValidationTemplate="{StaticResource ValidationTemplate}" />
+
+        <DataTemplate x:Key="ValidationTemplate" x:DataType="validation:TimetableValidationResult">
+            <TreeViewItem ItemsSource="{x:Bind Errors}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <controls:ValidationMessageControl Content="{x:Bind Title}" Validation="{x:Bind Result}" />
+
+                    <InfoBadge x:Name="infoBadge"
+                               Grid.Column="1"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Background="{ThemeResource SystemFillColorCautionBrush}"
+                               Opacity="{x:Bind Errors.Count}"
+                               Value="{x:Bind Errors.Count}" />
+                </Grid>
+            </TreeViewItem>
+
+        </DataTemplate>
+
+        <DataTemplate x:Key="ErrorTemplate">
+            <TreeViewItem>
+                <TextBlock FontSize="12"
+                           Text="{Binding}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="Wrap" />
+            </TreeViewItem>
+        </DataTemplate>
+    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -19,110 +59,199 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <CommandBar VerticalContentAlignment="Stretch" DefaultLabelPosition="Right">
-            <CommandBar.Content>
-                <Grid>
-                    <TextBlock Margin="12,0"
-                               VerticalAlignment="Center"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Text="Gerar grade de horários" />
-                </Grid>
-            </CommandBar.Content>
+        <Grid>
 
-            <AppBarToggleButton x:Name="optionsButton"
-                                Icon="Setting"
-                                IsChecked="{x:Bind OptionsTeachingTip.IsOpen, Mode=TwoWay}"
-                                Label="Opções">
-                <AppBarToggleButton.Resources>
-                    <TeachingTip x:Name="OptionsTeachingTip"
-                                 IsLightDismissEnabled="True"
-                                 Target="{x:Bind optionsButton}">
-                        <TeachingTip.Content>
-                            <StackPanel>
-                                <NumberBox Header="Aulas por dia"
-                                           Maximum="10"
-                                           Minimum="1"
-                                           PlaceholderText="Digite a quantidade de aulas por semana"
-                                           SpinButtonPlacementMode="Inline"
-                                           Value="{x:Bind ViewModel.PeriodPerDay, Mode=TwoWay}" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" MinWidth="150" />
+                <ColumnDefinition Width="81" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
 
-                                <MenuFlyoutSeparator Margin="0,4" />
+            <TextBlock Margin="12,0"
+                       VerticalAlignment="Center"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Text="Gerador de grade de horários" />
 
-                                <TextBlock FontWeight="Bold" Text="Restrições fortes" />
+            <toolkitSeg:Segmented x:Name="segmentedControl"
+                                  Grid.Column="1"
+                                  SelectedIndex="0"
+                                  SelectionMode="Single">
+                <toolkitSeg:Segmented.Shadow>
+                    <ThemeShadow />
+                </toolkitSeg:Segmented.Shadow>
+                <toolkitSeg:SegmentedItem ToolTipService.ToolTip="Visualização em Abas">
+                    <toolkitSeg:SegmentedItem.Icon>
+                        <FontIcon Glyph="&#xE737;" />
+                    </toolkitSeg:SegmentedItem.Icon>
+                </toolkitSeg:SegmentedItem>
+                <toolkitSeg:SegmentedItem ToolTipService.ToolTip="Visualização em Barra de rolagem">
+                    <toolkitSeg:SegmentedItem.Icon>
+                        <FontIcon Glyph="&#xE7DE;" />
+                    </toolkitSeg:SegmentedItem.Icon>
+                </toolkitSeg:SegmentedItem>
+            </toolkitSeg:Segmented>
 
-                                <CheckBox Content="Todas as disciplinas devem ser alocadas para um horário"
-                                          IsChecked="True"
-                                          IsEnabled="False" />
+            <CommandBar Grid.Column="2"
+                        VerticalContentAlignment="Stretch"
+                        DefaultLabelPosition="Right">
 
-                                <CheckBox Content="Toda aula deve ser alocada em um horário disponível"
-                                          IsChecked="True"
-                                          IsEnabled="False" />
-
-                                <CheckBox Content="Um professor deve ser alocado para uma única turma por período"
-                                          IsChecked="True"
-                                          IsEnabled="False" />
-
-                                <MenuFlyoutSeparator Margin="0,4" />
-
-                                <TextBlock FontWeight="Bold" Text="Restrições leves" />
-
-                                <CheckBox Content="Evitar mais de duas aulas da mesma disciplina por dia" IsChecked="{x:Bind ViewModel.ExcessDailyClassesConstraintIsEnabled, Mode=TwoWay}" />
-
-                                <CheckBox Content="Preferir que uma disciplina tenha duas aulas consecutivas no mesmo dia" IsChecked="{x:Bind ViewModel.ConsecutiveClassesRewardConstraintIsEnabled, Mode=TwoWay}" />
-
-                                <MenuFlyoutSeparator Margin="0,4" />
-
-                                <TextBlock FontWeight="Bold" Text="Configurações" />
-
-                                <Slider Maximum="64"
-                                        Minimum="1"
-                                        StepFrequency="4"
-                                        TickFrequency="4"
-                                        TickPlacement="Outside"
-                                        Value="{x:Bind ViewModel.MaxThreads, Mode=TwoWay}">
-                                    <Slider.Header>
-                                        <TextBlock>
-                                            <Run Text="Quantidade de processos paralelos" />
-                                        </TextBlock>
-                                    </Slider.Header>
-                                </Slider>
-
-                                <Grid ColumnSpacing="4">
+                <AppBarToggleButton x:Name="optionsButton"
+                                    IsChecked="{x:Bind OptionsTeachingTip.IsOpen, Mode=TwoWay}"
+                                    Label="Configurar e gerar">
+                    <AppBarToggleButton.Icon>
+                        <SymbolIcon x:Name="optionsButtonIcon"
+                                    RenderTransformOrigin="0.50,0.50"
+                                    Symbol="Setting">
+                            <SymbolIcon.RenderTransform>
+                                <CompositeTransform />
+                            </SymbolIcon.RenderTransform>
+                        </SymbolIcon>
+                    </AppBarToggleButton.Icon>
+                    <AppBarToggleButton.Resources>
+                        <TeachingTip x:Name="OptionsTeachingTip"
+                                     HeroContentPlacement="Bottom"
+                                     IsLightDismissEnabled="True"
+                                     Target="{x:Bind optionsButton}">
+                            <TeachingTip.HeroContent>
+                                <Grid Padding="8"
+                                      Background="{ThemeResource LayerFillColorDefault}"
+                                      BorderBrush="{ThemeResource NavigationViewItemSeparatorForeground}"
+                                      BorderThickness="0,1,0,0"
+                                      ColumnSpacing="4">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
 
-                                    <FontIcon HorizontalAlignment="Left"
-                                              VerticalAlignment="Center"
-                                              FontSize="14"
-                                              Glyph="&#xF167;" />
+                                    <Button HorizontalAlignment="Stretch"
+                                            Background="{ThemeResource SystemFillColorCriticalBrush}"
+                                            Click="{x:Bind ViewModel.GenerateTimetablingCommand.Cancel}"
+                                            IsEnabled="{x:Bind ViewModel.GenerateTimetablingCommand.CanBeCanceled, Mode=OneWay}"
+                                            Style="{ThemeResource AccentButtonStyle}">
+                                        <StackPanel Orientation="Horizontal" Spacing="2">
+                                            <FontIcon FontSize="14" Glyph="&#xE71A;" />
+                                            <TextBlock Text="Parar" />
+                                        </StackPanel>
+                                    </Button>
 
-                                    <TextBlock Grid.Column="1"
-                                               FontSize="12"
-                                               Opacity="0.7"
-                                               Text="Mais processos consomem mais memória, mas podem encontrar soluções mais rapidamente."
-                                               TextWrapping="Wrap" />
+                                    <Button Grid.Column="1"
+                                            HorizontalAlignment="Stretch"
+                                            Command="{x:Bind ViewModel.GenerateTimetablingCommand}"
+                                            Style="{ThemeResource AccentButtonStyle}">
+                                        <StackPanel Orientation="Horizontal" Spacing="2">
+                                            <StackPanel.ChildrenTransitions>
+                                                <TransitionCollection>
+                                                    <RepositionThemeTransition />
+                                                </TransitionCollection>
+                                            </StackPanel.ChildrenTransitions>
+                                            <ProgressRing Width="14"
+                                                          Height="14"
+                                                          IsActive="{x:Bind ViewModel.GenerateTimetablingCommand.IsRunning, Mode=OneWay}"
+                                                          Visibility="{x:Bind ViewModel.GenerateTimetablingCommand.IsRunning, Converter={StaticResource ItemToBoolConverter}, Mode=OneWay}" />
+                                            <FontIcon FontSize="14" Glyph="&#xE768;" />
+                                            <TextBlock Text="Iniciar geração" />
+                                        </StackPanel>
+                                    </Button>
                                 </Grid>
+                            </TeachingTip.HeroContent>
+                            <TeachingTip.Content>
+                                <StackPanel>
 
+                                    <Grid ColumnSpacing="4" Visibility="Visible">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
 
+                                        <NumberBox Grid.Column="0"
+                                                   Maximum="10"
+                                                   Minimum="1"
+                                                   PlaceholderText="Obrigatório"
+                                                   SpinButtonPlacementMode="Inline"
+                                                   Value="{x:Bind ViewModel.PeriodPerDay, Mode=TwoWay}" />
 
-                            </StackPanel>
-                        </TeachingTip.Content>
-                    </TeachingTip>
-                </AppBarToggleButton.Resources>
-            </AppBarToggleButton>
+                                        <TextBlock Grid.Column="1"
+                                                   VerticalAlignment="Center"
+                                                   Text="aula(s) por dia" />
 
-            <AppBarButton Command="{x:Bind ViewModel.GenerateTimetablingCommand}"
-                          Icon="Play"
-                          Label="Iniciar" />
+                                    </Grid>
 
-            <AppBarButton Click="{x:Bind ViewModel.GenerateTimetablingCommand.Cancel}"
-                          Icon="Stop"
-                          IsEnabled="{x:Bind ViewModel.GenerateTimetablingCommand.CanBeCanceled, Mode=OneWay}"
-                          Label="Parar de buscar" />
-        </CommandBar>
+                                    <NumberBox Header="Aulas por dia"
+                                               Maximum="10"
+                                               Minimum="1"
+                                               PlaceholderText="Digite a quantidade de aulas por semana"
+                                               SpinButtonPlacementMode="Inline"
+                                               Visibility="Collapsed"
+                                               Value="{x:Bind ViewModel.PeriodPerDay, Mode=TwoWay}" />
+
+                                    <MenuFlyoutSeparator Margin="0,4" />
+
+                                    <TextBlock FontWeight="Bold" Text="Restrições fortes" />
+
+                                    <CheckBox Content="Todas as disciplinas devem ser alocadas para um horário"
+                                              IsChecked="True"
+                                              IsEnabled="False" />
+
+                                    <CheckBox Content="Toda aula deve ser alocada em um horário disponível"
+                                              IsChecked="True"
+                                              IsEnabled="False" />
+
+                                    <CheckBox Content="Um professor deve ser alocado para uma única turma por período"
+                                              IsChecked="True"
+                                              IsEnabled="False" />
+
+                                    <MenuFlyoutSeparator Margin="0,4" />
+
+                                    <TextBlock FontWeight="Bold" Text="Restrições leves" />
+
+                                    <CheckBox Content="Evitar mais de duas aulas da mesma disciplina por dia" IsChecked="{x:Bind ViewModel.ExcessDailyClassesConstraintIsEnabled, Mode=TwoWay}" />
+
+                                    <CheckBox Content="Preferir que uma disciplina tenha duas aulas consecutivas no mesmo dia" IsChecked="{x:Bind ViewModel.ConsecutiveClassesRewardConstraintIsEnabled, Mode=TwoWay}" />
+
+                                    <MenuFlyoutSeparator Margin="0,4" />
+
+                                    <TextBlock FontWeight="Bold" Text="Configurações" />
+
+                                    <Slider Maximum="64"
+                                            Minimum="1"
+                                            StepFrequency="4"
+                                            TickFrequency="4"
+                                            TickPlacement="Outside"
+                                            Value="{x:Bind ViewModel.MaxThreads, Mode=TwoWay}">
+                                        <Slider.Header>
+                                            <TextBlock>
+                                                <Run Text="Quantidade de processos paralelos" />
+                                            </TextBlock>
+                                        </Slider.Header>
+                                    </Slider>
+
+                                    <Grid ColumnSpacing="4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <FontIcon HorizontalAlignment="Left"
+                                                  VerticalAlignment="Center"
+                                                  FontSize="14"
+                                                  Glyph="&#xF167;" />
+
+                                        <TextBlock Grid.Column="1"
+                                                   FontSize="12"
+                                                   Opacity="0.7"
+                                                   Text="Mais processos consomem mais memória, mas podem encontrar soluções mais rapidamente."
+                                                   TextWrapping="Wrap" />
+                                    </Grid>
+
+                                </StackPanel>
+                            </TeachingTip.Content>
+                        </TeachingTip>
+                    </AppBarToggleButton.Resources>
+                </AppBarToggleButton>
+
+            </CommandBar>
+        </Grid>
 
         <Rectangle Grid.Row="1"
                    Height="1"
@@ -150,13 +279,125 @@
             </Grid.Transitions>
             <SplitView DisplayMode="CompactInline"
                        IsPaneOpen="True"
-                       OpenPaneLength="230"
+                       OpenPaneLength="280"
                        PaneBackground="{ThemeResource LayerOnAcrylicFillColorDefault}">
                 <SplitView.Pane>
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="1"
+                              Margin="4"
+                              Background="{ThemeResource NavigationViewContentBackground}"
+                              BorderBrush="{ThemeResource NavigationViewItemSeparatorForeground}"
+                              BorderThickness="1"
+                              CornerRadius="4"
+                              DataContext="{x:Bind combobox.SelectedItem, Mode=OneWay}">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Padding="8,4" Spacing="2">
+
+                                <TextBlock FontSize="16"
+                                           FontWeight="Bold"
+                                           Text="Informações" />
+
+                                <ComboBox x:Name="combobox"
+                                          HorizontalAlignment="Stretch"
+                                          ItemsSource="{x:Bind ViewModel.Timetables}"
+                                          PlaceholderText="Selecione uma grade de horários">
+                                    <ComboBox.Header>
+                                        <TextBlock>
+                                            <Run Text="Grade de horários geradas:" />
+                                            <Run FontWeight="Bold"
+                                                 Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
+                                                 Text="{x:Bind ViewModel.Timetables.Count, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </ComboBox.Header>
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="timetabling:Timetable">
+                                            <Grid Background="{ThemeResource NavigationViewContentBackground}"
+                                                  BorderBrush="{ThemeResource NavigationViewItemSeparatorForeground}"
+                                                  BorderThickness="1"
+                                                  CornerRadius="6"
+                                                  Translation="0,0,8">
+                                                <Grid.Shadow>
+                                                    <ThemeShadow />
+                                                </Grid.Shadow>
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="90" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid Padding="4"
+                                                      Background="{ThemeResource AccentAcrylicBackgroundFillColorBaseBrush}"
+                                                      BorderBrush="{ThemeResource NavigationViewItemSeparatorForeground}"
+                                                      BorderThickness="0,0,1,0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock VerticalAlignment="Bottom"
+                                                               FontSize="18"
+                                                               FontWeight="Bold"
+                                                               Text="{x:Bind ObjectiveValue}"
+                                                               TextAlignment="Center" />
+
+                                                    <TextBlock Grid.Row="1"
+                                                               VerticalAlignment="Top"
+                                                               FontSize="12"
+                                                               Text="Valor objetivo"
+                                                               TextAlignment="Center"
+                                                               TextWrapping="Wrap" />
+                                                </Grid>
+
+                                                <StackPanel Grid.Column="1"
+                                                            Padding="8"
+                                                            VerticalAlignment="Center">
+                                                    <TextBlock FontSize="12"
+                                                               Foreground="{ThemeResource SystemBaseMediumColor}"
+                                                               Text="Tempo de busca" />
+                                                    <TextBlock FontSize="14" FontWeight="SemiBold">
+                                                        <Run FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                             FontWeight="Normal"
+                                                             Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}"
+                                                             Text="&#xE823;" />
+                                                        <Run Text="{x:Bind SolutionTimeFormatted}" />
+                                                    </TextBlock>
+
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+
+                                <Rectangle Height="1"
+                                           Margin="0,8"
+                                           VerticalAlignment="Bottom"
+                                           Fill="{ThemeResource NavigationViewItemSeparatorForeground}" />
+
+                                <TextBlock FontWeight="SemiBold" Text="Validações" />
+                            </StackPanel>
+
+                            <TreeView Grid.Row="1"
+                                      ItemTemplateSelector="{StaticResource ValidationItemTemplateSelector}"
+                                      ItemsSource="{Binding ValidationResults}"
+                                      SelectionMode="None" />
+
+                        </Grid>
+
+
                         <ListView x:Name="lista"
                                   Padding="0,4"
-                                  ItemsSource="{x:Bind ViewModel.Timetables}">
+                                  ItemsSource="{x:Bind ViewModel.Timetables}"
+                                  Visibility="Collapsed">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="timetabling:Timetable">
                                     <Grid Margin="2"
@@ -223,33 +464,85 @@
                 <SplitView.Content>
                     <Grid BorderBrush="{ThemeResource NavigationViewItemSeparatorForeground}"
                           BorderThickness="1,0,0,0"
-                          DataContext="{x:Bind lista.SelectedItem, Mode=OneWay}">
+                          DataContext="{x:Bind combobox.SelectedItem, Mode=OneWay}">
+                        <toolkitControls:SwitchPresenter TargetType="x:Int32" Value="{x:Bind segmentedControl.SelectedIndex, Mode=OneWay}">
+                            <toolkitControls:Case Value="0">
 
-                        <ScrollView Grid.Row="0">
-                            <ItemsRepeater ItemsSource="{Binding ClassSchedules}">
-                                <ItemsRepeater.ItemTemplate>
-                                    <DataTemplate x:DataType="models:ClassSchedule">
-                                        <Grid Padding="8" RowSpacing="4">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="25" />
-                                                <RowDefinition />
-                                            </Grid.RowDefinitions>
+                                <TabView Grid.Row="3"
+                                         VerticalAlignment="Stretch"
+                                         CanDragTabs="False"
+                                         CanReorderTabs="False"
+                                         IsAddTabButtonVisible="False"
+                                         TabItemsSource="{Binding ClassSchedules}">
+                                    <TabView.Resources>
+                                        <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{ThemeResource LayerFillColorDefault}" />
+                                    </TabView.Resources>
+                                    <TabView.TabItemTemplate>
+                                        <DataTemplate x:DataType="models:ClassSchedule">
+                                            <TabViewItem VerticalContentAlignment="Stretch"
+                                                         Header="{Binding Classroom.Name}"
+                                                         IsClosable="False">
+                                                <Grid Padding="8"
+                                                      Background="{ThemeResource LayerFillColorDefault}"
+                                                      RowSpacing="4">
 
-                                            <TextBlock FontSize="16"
-                                                       Text="{x:Bind Classroom.Name}"
-                                                       TextAlignment="Center" />
+                                                    <controls:ScheduleView Grid.Row="1"
+                                                                           HorizontalAlignment="Center"
+                                                                           ClassSchedule="{x:Bind}" />
+                                                </Grid>
+                                            </TabViewItem>
+                                        </DataTemplate>
+                                    </TabView.TabItemTemplate>
+                                </TabView>
+                            </toolkitControls:Case>
+                            <toolkitControls:Case Value="1">
 
-                                            <controls:ScheduleView Grid.Row="1"
-                                                                   HorizontalAlignment="Center"
-                                                                   ClassSchedule="{x:Bind}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsRepeater.ItemTemplate>
-                            </ItemsRepeater>
-                        </ScrollView>
+                                <ScrollView Grid.Row="1">
+                                    <ItemsRepeater ItemsSource="{Binding ClassSchedules}">
+                                        <ItemsRepeater.ItemTemplate>
+                                            <DataTemplate x:DataType="models:ClassSchedule">
+                                                <Grid Padding="8" RowSpacing="4">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="25" />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock FontSize="16"
+                                                               Text="{x:Bind Classroom.Name}"
+                                                               TextAlignment="Center" />
+
+                                                    <controls:ScheduleView Grid.Row="1"
+                                                                           HorizontalAlignment="Center"
+                                                                           ClassSchedule="{x:Bind}" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsRepeater.ItemTemplate>
+                                    </ItemsRepeater>
+                                </ScrollView>
+                            </toolkitControls:Case>
+                        </toolkitControls:SwitchPresenter>
                     </Grid>
                 </SplitView.Content>
             </SplitView>
         </Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="BlinkingVisualStates">
+                <VisualState x:Name="NotWorkingVisualState" />
+                <VisualState x:Name="WorkingVisualState">
+                    <Storyboard x:Name="IconBlinking"
+                                AutoReverse="False"
+                                RepeatBehavior="Forever">
+                        <DoubleAnimation Storyboard.TargetName="optionsButtonIcon"
+                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.Rotation)"
+                                         To="360"
+                                         Duration="0:0:03" />
+                    </Storyboard>
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind ViewModel.GenerateTimetablingCommand.IsRunning, Mode=OneWay}" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>

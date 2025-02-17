@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="using:ClassPlanner.Controls">
+
+    <Style TargetType="local:ValidationMessageControl">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:ValidationMessageControl">
+                    <Grid Padding="{TemplateBinding Padding}"
+                          VerticalAlignment="Top"
+                          Background="{TemplateBinding Background}"
+                          BackgroundSizing="OuterBorderEdge"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          ColumnSpacing="2"
+                          CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid VerticalAlignment="Center">
+                            <TextBlock x:Name="IconBackground"
+                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                       FontSize="16"
+                                       Foreground="Red"
+                                       Text="&#xF136;" />
+                            <TextBlock x:Name="Icon"
+                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                       FontSize="16"
+                                       Foreground="{ThemeResource SystemAltHighColor}" />
+                        </Grid>
+
+                        <TextBlock x:Name="MessageText"
+                                   Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   FontSize="12"
+                                   Text="{TemplateBinding Content}"
+                                   TextWrapping="Wrap" />
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="MessageStates">
+                                <VisualState x:Name="Success">
+                                    <VisualState.Setters>
+                                        <Setter Target="Icon.Text" Value="&#xF13E;" />
+                                        <Setter Target="IconBackground.Foreground" Value="{ThemeResource SystemFillColorSuccessBrush}" />
+                                        <Setter Target="MessageText.Foreground" Value="{ThemeResource SystemFillColorSuccessBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                <VisualState x:Name="Warning">
+                                    <VisualState.Setters>
+                                        <Setter Target="Icon.Text" Value="&#xF13C;" />
+                                        <Setter Target="IconBackground.Foreground" Value="{ThemeResource SystemFillColorCautionBrush}" />
+                                        <Setter Target="MessageText.Foreground" Value="{ThemeResource SystemFillColorCautionBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+
+                                <VisualState x:Name="Error">
+                                    <VisualState.Setters>
+                                        <Setter Target="Icon.Text" Value="&#xF13D;" />
+                                        <Setter Target="IconBackground.Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}" />
+                                        <Setter Target="MessageText.Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

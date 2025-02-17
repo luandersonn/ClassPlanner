@@ -1,5 +1,8 @@
 ﻿using ClassPlanner.Data;
+using ClassPlanner.Models;
+using ClassPlanner.Timetabling.Validation;
 using Google.OrTools.Sat;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,16 +15,15 @@ public class TeacherAvailabilityConstraint : IConstraint
         int totalPeriods = input.PeriodsPerDay * input.WorkingDaysCount;
 
         foreach (Teacher teacher in input.Classrooms
-                                     .SelectMany(c => c.Subjects)
-                                     .Where(s => s.Teacher is not null)
-                                     .Select(s => s.Teacher!)
-                                     .Distinct())
+                                         .SelectMany(c => c.Subjects)
+                                         .Where(s => s.Teacher is not null)
+                                         .Select(s => s.Teacher!)
+                                         .Distinct())
         {
-            HashSet<long> teacherSubjects = input.Classrooms
+            HashSet<long> teacherSubjects = [.. input.Classrooms
                                                  .SelectMany(c => c.Subjects)
                                                  .Where(s => s.TeacherId == teacher.TeacherId)
-                                                 .Select(s => s.SubjectId)
-                                                 .ToHashSet();
+                                                 .Select(s => s.SubjectId)];
 
             for (int periodIndex = 0; periodIndex < totalPeriods; periodIndex++)
             {
@@ -38,4 +40,53 @@ public class TeacherAvailabilityConstraint : IConstraint
         }
     }
 
+    public TimetableValidationResult Validate(TimetableInput input, Timetable timetable)
+    {
+        TimetableValidationResult validationResult = new()
+        {
+            Result = ValidationResultType.Success,
+            Title = "Nenhum professor pode ministrar duas aulas simultaneamente no mesmo período"
+        };
+
+        foreach (Teacher teacher in input.Classrooms
+                                         .SelectMany(c => c.Subjects)
+                                         .Where(s => s.Teacher is not null)
+                                         .Select(s => s.Teacher!)
+                                         .Distinct())
+        {
+            HashSet<long> teacherSubjects = [.. input.Classrooms
+                                                     .SelectMany(c => c.Subjects)
+                                                     .Where(s => s.TeacherId == teacher.TeacherId)
+                                                     .Select(s => s.SubjectId)];
+
+            Dictionary<(DayOfWeek day, long period), List<string>> scheduleByTime = [];
+
+            foreach (ClassSchedule classSchedule in timetable.ClassSchedules)
+            {
+                foreach (SubjectSchedule subjectSchedule in classSchedule.SubjectSchedules)
+                {
+                    if (!teacherSubjects.Contains(subjectSchedule.Subject.SubjectId))
+                        continue;
+
+                    (DayOfWeek Day, int Period) key = (subjectSchedule.Day, subjectSchedule.Period);
+
+                    if (!scheduleByTime.TryGetValue(key, out List<string>? classesAtTime))
+                    {
+                        classesAtTime = [];
+                        scheduleByTime[key] = classesAtTime;
+                    }
+
+                    classesAtTime.Add(classSchedule.Classroom.Name);
+
+                    if (classesAtTime.Count > 1)
+                    {
+                        validationResult.AddError($"O professor '{teacher.Name}' está alocado em mais de uma turma ao mesmo tempo no dia {key.Day}, período {key.Period}. Turmas: {string.Join(", ", classesAtTime)}.");
+                        validationResult.Result = ValidationResultType.Error;
+                    }
+                }
+            }
+        }
+
+        return validationResult;
+    }
 }
